@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/dot-product-struct2.dir/src/dot-product-struct2.cxx.o  -o dot-product-struct2 -rdynamic 

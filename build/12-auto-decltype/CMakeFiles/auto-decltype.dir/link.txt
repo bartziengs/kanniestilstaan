@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/auto-decltype.dir/src/auto-decltype.cxx.o  -o auto-decltype -rdynamic 

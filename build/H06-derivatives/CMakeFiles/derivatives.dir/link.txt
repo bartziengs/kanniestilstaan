@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/derivatives.dir/src/derivatives.cxx.o  -o derivatives -rdynamic 
