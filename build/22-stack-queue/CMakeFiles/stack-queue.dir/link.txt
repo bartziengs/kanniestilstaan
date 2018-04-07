@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/stack-queue.dir/src/stack-queue.cxx.o  -o stack-queue -rdynamic 

@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/algorithm.dir/src/algorithm.cxx.o  -o algorithm -rdynamic 

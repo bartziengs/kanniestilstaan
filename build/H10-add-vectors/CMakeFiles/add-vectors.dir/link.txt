@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/add-vectors.dir/src/add-vectors.cxx.o  -o add-vectors -rdynamic 

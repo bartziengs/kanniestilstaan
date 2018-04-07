@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/passing-arguments.dir/src/passing-arguments.cxx.o  -o passing-arguments -rdynamic 

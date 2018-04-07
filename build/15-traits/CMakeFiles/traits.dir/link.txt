@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/traits.dir/src/traits.cxx.o  -o traits -rdynamic 

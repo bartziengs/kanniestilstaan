@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/git-bisect.dir/src/git-bisect.cxx.o  -o git-bisect -rdynamic 

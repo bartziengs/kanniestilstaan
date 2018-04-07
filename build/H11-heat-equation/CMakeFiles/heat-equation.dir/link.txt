@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/heat-equation.dir/src/heat-equation.cxx.o  -o heat-equation -rdynamic 

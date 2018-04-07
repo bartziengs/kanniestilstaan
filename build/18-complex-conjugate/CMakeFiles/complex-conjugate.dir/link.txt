@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/complex-conjugate.dir/src/complex-conjugate.cxx.o  -o complex-conjugate -rdynamic 
