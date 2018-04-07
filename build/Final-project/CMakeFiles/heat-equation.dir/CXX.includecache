@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bart/Documents/OOP_C++/tw3720tu.2017/Final-project/src/heat-equation.cxx
+iostream
+-
+string.h
+-
+typeinfo
+-
+

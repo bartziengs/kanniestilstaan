@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/templatesh07.dir/src/templates.cxx.o  -o templatesh07 -rdynamic 

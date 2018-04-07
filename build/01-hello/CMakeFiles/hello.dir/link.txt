@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/hello.dir/src/hello.cxx.o  -o hello -rdynamic 

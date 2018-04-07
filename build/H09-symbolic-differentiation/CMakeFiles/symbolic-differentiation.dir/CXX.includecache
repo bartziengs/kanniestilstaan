@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bart/Documents/OOP_C++/tw3720tu.2017/H09-symbolic-differentiation/src/symbolic-differentiation.cxx
+iostream
+-
+math.h
+-
+

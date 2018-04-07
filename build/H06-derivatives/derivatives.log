@@ -1,0 +1,78 @@
+#include <iostream>
+#include <functional>
+
+class Derivative
+{
+  public:
+    virtual double differentiate(
+            std::function<double(double)> func, double x) = 0;
+    
+    Derivative(double h)
+    : h(h)
+    {}
+
+    Derivative()
+    :h(1e-8)
+    {}
+
+    protected:
+    double h;
+};
+
+class CentralDifference : public Derivative
+{
+  public:
+    using Derivative::Derivative;
+    virtual double differentiate(
+            std::function<double(double)> func, double x){
+        return (func(x+h) - func(x-h)) / (2*h);
+    }
+};
+
+class ForwardDifference : public Derivative
+{
+  public:
+    using Derivative::Derivative;
+    virtual double differentiate(
+            std::function<double(double)> func, double x){
+        return (func(x+h) - func(x)) / h;
+    }
+};
+
+//classical function
+double test1(double x)
+        {
+            return 2*x + 9;
+        };
+
+//lambda function
+auto test2 = [](double x) { return 3*x*x-6; };
+
+int main()
+{
+   std::cout << "Testing" << std::endl;
+
+    CentralDifference CD;
+    std::cout << "Central Diffrence of test1: " << CD.differentiate(test1, 3) << std::endl;
+    std::cout << "Central Diffrence of test2: " << CD.differentiate(test2, 4) << std::endl;
+
+    ForwardDifference FD;
+    std::cout << "Forward Diffrence of test2: " << FD.differentiate(test1, 3) << std::endl;
+    ForwardDifference FD1(1e-10); //try with other spacing parameter
+    std::cout << "Forward Diffrence of test2: " << FD.differentiate(test2, 3) << std::endl;
+
+    return 0;
+}=== Start Environment 
+PROJECT_NAME = H06-derivatives
+CMAKE_SYSTEM = Linux-4.10.0-37-generic
+CMAKE_VERSION = 3.5.1
+CMAKE_CXX_COMPILER_ID = GNU
+CMAKE_CXX_COMPILER_VERSION = 5.4.0
+=== End Environment 
+=== Start of output from execution of binary derivatives
+Testing
+Central Diffrence of test1: 2
+Central Diffrence of test2: 24
+Forward Diffrence of test2: 2
+Forward Diffrence of test2: 18
+=== End of output from execution of binary derivatives

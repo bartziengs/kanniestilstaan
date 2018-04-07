@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bart/Documents/OOP_C++/tw3720tu.2017/14-templates-partial-specialisation/src/templates-partial-specialisation.cxx
+iostream
+-
+typeinfo
+-
+

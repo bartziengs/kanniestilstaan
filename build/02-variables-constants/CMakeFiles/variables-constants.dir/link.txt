@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/variables-constants.dir/src/variables-constants.cxx.o  -o variables-constants -rdynamic 

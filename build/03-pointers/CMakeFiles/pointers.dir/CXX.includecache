@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bart/Documents/OOP_C++/tw3720tu.2017/03-pointers/src/pointers.cxx
+iostream
+-
+typeinfo
+-
+

@@ -1,0 +1,256 @@
+#include <iostream>
+#include <memory>
+
+class Container
+{
+  public:
+    // constructors
+
+    //1.  Create a default constructor,
+    Container()
+    {
+        length = 0;
+        data = nullptr;
+        print("default constructor");
+    }
+
+    //2.  Create a constructor that takes one `int` argument that holds the length of
+    Container(int length)
+        : length(length), data(new double[length])
+    {
+        print("constructor that takes one int");
+    }
+    //3.  Create a constructor that takes an `std::initializer_list<double>`.
+    Container(std::initializer_list<double> l)
+        : Container((int)l.size())
+    {
+        std::uninitialized_copy(l.begin(), l.end(), data);
+        print("constructor that takes a list");
+    }
+
+    //4.  Create a copy constructor that takes a `Container` argument.
+    Container(const Container &c)
+        : Container(c.length)
+    {
+        for (auto i = 0; i < c.length; i++){
+            data[i] = c.data[i];
+        }
+        print("copy constructor");
+    }
+
+    //5.  Create a move constructor that takes a `Container` argument.
+    Container(Container &&c)
+        : length(c.length), data(c.data)
+    {
+        c.length = 0;
+        c.data = nullptr;
+        print("move constructor");
+    }
+
+    //7.  Create a copy assignment operator.
+    Container &operator=(const Container &other)
+    {
+        if (this != &other)
+        {
+            delete[] data;
+            data = new double[other.length];
+            length = other.length;
+            for (auto i = 0; i < length; i++)
+                data[i] = other.data[i];
+        }
+        print("copy assignment operator");
+        return *this;
+    }
+    //8.  Create a move assignment operator.
+    Container &operator=(Container &&other)
+    {
+        if (this != &other)
+        {
+            delete[] data;
+            data = other.data;
+            other.data = nullptr;
+            length = other.length;
+            other.length = 0;
+        }
+        print("move assignment operator");
+        return *this;
+    }
+    
+    // destructor
+    //6.  Create a destructor that `delete[]`s the `data` attribute.
+    ~Container()
+    {
+        delete[] data;
+        length = 0;
+        print("destructor");
+    }
+    // operators
+    //9.  Create an `operator+` that takes one `Container` argument.
+    Container operator+(Container other){
+        Container c;
+        c = std::move(other);
+        for(int i; i < length; i++){
+            c.data[i]+=data[i];
+        }
+        print("+operator");
+        return c;
+    }
+    void print(const std::string &info) const
+    {
+        // print the address of this instance, the attributes `length` and
+        // `data` and the `info` string
+        std::cout << "  " << this << " " << length << " " << data << "  "
+                  << info << std::endl;
+    }
+
+  private:
+    int length;
+    double *data;
+};
+
+int main()
+{
+    std::cout << "Container a({ 1, 2, 3 });" << std::endl;
+    Container a({1, 2, 3}); //calls constructor that takes a list and subsequently the one taking a int (implemented constructor)
+    std::cout << "  a has address " << &a << std::endl;
+    std::cout << "Container b = { 4, 5, 6 };" << std::endl;
+    Container b = {4, 5, 6};//calls constructor that takes a list and also the int one
+    std::cout << "  b has address " << &b << std::endl;
+    std::cout << "Container c(a);" << std::endl;
+    Container c(a); //calls copy constructor and the int constructor
+    std::cout << "  c has address " << &c << std::endl;
+    std::cout << "Container d = a + b;" << std::endl;
+    Container d = a + b; //calls operator, move assignment, then default for and copies it to d.
+    std::cout << "  d has address " << &d << std::endl;
+    std::cout << "Container e;" << std::endl;
+    Container e;  // this is just plain default constructor.
+    std::cout << "  e has address " << &e << std::endl;
+    std::cout << "e = a + b;" << std::endl;
+    e = a + b; //calls move (from =) then + operator, then move agian, copy constructor and one taking a int
+    std::cout << "Container f(std::move(a + b));" << std::endl;
+    Container f(std::move(a + b)); //calls move constructor, then operator for a + b) then move assignment (for f) n, which calls copy then the int one.
+    std::cout << "  f has address " << &f << std::endl;
+    std::cout << "Container g = a + b + c;" << std::endl;
+    Container g = a + b + c; // +,move,+,move, default, copy , 1 int, copy , 1 int.
+    std::cout << "  g has address " << &g << std::endl;
+    std::cout << "Container h;" << std::endl;
+    Container h; //default
+    std::cout << "  h has address " << &h << std::endl;
+    std::cout << "h = a + b + c;" << std::endl;
+    h = a + b + c;  //move,+,move,+ copy, int , copoy , int
+    std::cout << "Container i = { a + b + c };" << std::endl;
+    Container i = {a + b + c};//+,move,+,move,copy, one int
+    std::cout << "  i has address " << &i << std::endl;
+    std::cout << "end" << std::endl;
+
+    return 0;
+}=== Start Environment 
+PROJECT_NAME = H05-copy-move
+CMAKE_SYSTEM = Linux-4.10.0-37-generic
+CMAKE_VERSION = 3.5.1
+CMAKE_CXX_COMPILER_ID = GNU
+CMAKE_CXX_COMPILER_VERSION = 5.4.0
+=== End Environment 
+=== Start of output from execution of binary movecopy
+Container a({ 1, 2, 3 });
+  0x7fffaa3c6100 3 0x886c30  constructor that takes one int
+  0x7fffaa3c6100 3 0x886c30  constructor that takes a list
+  a has address 0x7fffaa3c6100
+Container b = { 4, 5, 6 };
+  0x7fffaa3c6110 3 0x886c80  constructor that takes one int
+  0x7fffaa3c6110 3 0x886c80  constructor that takes a list
+  b has address 0x7fffaa3c6110
+Container c(a);
+  0x7fffaa3c6120 3 0x886ca0  constructor that takes one int
+  0x7fffaa3c6120 3 0x886ca0  copy constructor
+  c has address 0x7fffaa3c6120
+Container d = a + b;
+  0x7fffaa3c6140 3 0x886cc0  constructor that takes one int
+  0x7fffaa3c6140 3 0x886cc0  copy constructor
+  0x7fffaa3c6130 0 0  default constructor
+  0x7fffaa3c6130 3 0x886cc0  move assignment operator
+  0x7fffaa3c6100 3 0x886c30  +operator
+  0x7fffaa3c6140 0 0  destructor
+  d has address 0x7fffaa3c6130
+Container e;
+  0x7fffaa3c6150 0 0  default constructor
+  e has address 0x7fffaa3c6150
+e = a + b;
+  0x7fffaa3c6160 3 0x886ce0  constructor that takes one int
+  0x7fffaa3c6160 3 0x886ce0  copy constructor
+  0x7fffaa3c6170 0 0  default constructor
+  0x7fffaa3c6170 3 0x886ce0  move assignment operator
+  0x7fffaa3c6100 3 0x886c30  +operator
+  0x7fffaa3c6150 3 0x886ce0  move assignment operator
+  0x7fffaa3c6170 0 0  destructor
+  0x7fffaa3c6160 0 0  destructor
+Container f(std::move(a + b));
+  0x7fffaa3c6190 3 0x886d00  constructor that takes one int
+  0x7fffaa3c6190 3 0x886d00  copy constructor
+  0x7fffaa3c61a0 0 0  default constructor
+  0x7fffaa3c61a0 3 0x886d00  move assignment operator
+  0x7fffaa3c6100 3 0x886c30  +operator
+  0x7fffaa3c6180 3 0x886d00  move constructor
+  0x7fffaa3c61a0 0 0  destructor
+  0x7fffaa3c6190 0 0  destructor
+  f has address 0x7fffaa3c6180
+Container g = a + b + c;
+  0x7fffaa3c61e0 3 0x886d20  constructor that takes one int
+  0x7fffaa3c61e0 3 0x886d20  copy constructor
+  0x7fffaa3c61c0 3 0x886d40  constructor that takes one int
+  0x7fffaa3c61c0 3 0x886d40  copy constructor
+  0x7fffaa3c61d0 0 0  default constructor
+  0x7fffaa3c61d0 3 0x886d40  move assignment operator
+  0x7fffaa3c6100 3 0x886c30  +operator
+  0x7fffaa3c61b0 0 0  default constructor
+  0x7fffaa3c61b0 3 0x886d20  move assignment operator
+  0x7fffaa3c61d0 3 0x886d40  +operator
+  0x7fffaa3c61d0 0 0x886d40  destructor
+  0x7fffaa3c61c0 0 0  destructor
+  0x7fffaa3c61e0 0 0  destructor
+  g has address 0x7fffaa3c61b0
+Container h;
+  0x7fffaa3c61f0 0 0  default constructor
+  h has address 0x7fffaa3c61f0
+h = a + b + c;
+  0x7fffaa3c6220 3 0x886d40  constructor that takes one int
+  0x7fffaa3c6220 3 0x886d40  copy constructor
+  0x7fffaa3c6200 3 0x886d60  constructor that takes one int
+  0x7fffaa3c6200 3 0x886d60  copy constructor
+  0x7fffaa3c6210 0 0  default constructor
+  0x7fffaa3c6210 3 0x886d60  move assignment operator
+  0x7fffaa3c6100 3 0x886c30  +operator
+  0x7fffaa3c6230 0 0  default constructor
+  0x7fffaa3c6230 3 0x886d40  move assignment operator
+  0x7fffaa3c6210 3 0x886d60  +operator
+  0x7fffaa3c61f0 3 0x886d40  move assignment operator
+  0x7fffaa3c6230 0 0  destructor
+  0x7fffaa3c6210 0 0x886d60  destructor
+  0x7fffaa3c6200 0 0  destructor
+  0x7fffaa3c6220 0 0  destructor
+Container i = { a + b + c };
+  0x7fffaa3c6270 3 0x886d60  constructor that takes one int
+  0x7fffaa3c6270 3 0x886d60  copy constructor
+  0x7fffaa3c6250 3 0x886d80  constructor that takes one int
+  0x7fffaa3c6250 3 0x886d80  copy constructor
+  0x7fffaa3c6260 0 0  default constructor
+  0x7fffaa3c6260 3 0x886d80  move assignment operator
+  0x7fffaa3c6100 3 0x886c30  +operator
+  0x7fffaa3c6240 0 0  default constructor
+  0x7fffaa3c6240 3 0x886d60  move assignment operator
+  0x7fffaa3c6260 3 0x886d80  +operator
+  0x7fffaa3c6260 0 0x886d80  destructor
+  0x7fffaa3c6250 0 0  destructor
+  0x7fffaa3c6270 0 0  destructor
+  i has address 0x7fffaa3c6240
+end
+  0x7fffaa3c6240 0 0x886d60  destructor
+  0x7fffaa3c61f0 0 0x886d40  destructor
+  0x7fffaa3c61b0 0 0x886d20  destructor
+  0x7fffaa3c6180 0 0x886d00  destructor
+  0x7fffaa3c6150 0 0x886ce0  destructor
+  0x7fffaa3c6130 0 0x886cc0  destructor
+  0x7fffaa3c6120 0 0x886ca0  destructor
+  0x7fffaa3c6110 0 0x886c80  destructor
+  0x7fffaa3c6100 0 0x886c30  destructor
+=== End of output from execution of binary movecopy

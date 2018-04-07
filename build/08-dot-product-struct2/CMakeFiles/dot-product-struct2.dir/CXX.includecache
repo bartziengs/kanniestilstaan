@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bart/Documents/OOP_C++/tw3720tu.2017/08-dot-product-struct2/src/dot-product-struct2.cxx
+iostream
+-
+exception
+-
+initializer_list
+-
+memory
+-
+

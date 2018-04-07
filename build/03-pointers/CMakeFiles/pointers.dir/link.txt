@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/pointers.dir/src/pointers.cxx.o  -o pointers -rdynamic 

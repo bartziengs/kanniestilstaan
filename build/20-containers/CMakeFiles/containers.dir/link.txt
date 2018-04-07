@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/containers.dir/src/containers.cxx.o  -o containers -rdynamic 

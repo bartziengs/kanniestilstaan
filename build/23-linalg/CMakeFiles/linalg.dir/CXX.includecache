@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bart/Documents/OOP_C++/tw3720tu.2017/23-linalg/src/LAETLib.h
+iostream
+-
+
+/home/bart/Documents/OOP_C++/tw3720tu.2017/23-linalg/src/LALib.h
+iostream
+-
+algorithm
+-
+
+/home/bart/Documents/OOP_C++/tw3720tu.2017/23-linalg/src/linalg.cxx
+iostream
+-
+LALib.h
+/home/bart/Documents/OOP_C++/tw3720tu.2017/23-linalg/src/LALib.h
+LAETLib.h
+/home/bart/Documents/OOP_C++/tw3720tu.2017/23-linalg/src/LAETLib.h
+

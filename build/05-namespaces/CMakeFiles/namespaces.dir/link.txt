@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/namespaces.dir/src/namespaces.cxx.o  -o namespaces -rdynamic 

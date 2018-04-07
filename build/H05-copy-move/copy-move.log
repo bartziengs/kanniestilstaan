@@ -1,0 +1,42 @@
+#include <iostream>
+using namespace std;
+
+
+int main(){
+
+
+    cout << "if this is displayed the code is compiled properly" << endl;
+    
+    return 0;
+}=== Start Environment 
+PROJECT_NAME = H05-copy-move
+CMAKE_SYSTEM = Linux-4.10.0-37-generic
+CMAKE_VERSION = 3.5.1
+CMAKE_CXX_COMPILER_ID = GNU
+CMAKE_CXX_COMPILER_VERSION = 5.4.0
+=== End Environment 
+=== Start of output from execution of binary copy-move
+Length of data pointer:  4
+Address of data pointer: 0x7fff180a5230
+Data pointer:            0x1254c20
+Container: 1 2 3 4 
+Length of data pointer:  3
+Address of data pointer: 0x7fff180a5240
+Data pointer:            0x1255c60
+Container: 0 0 0 
+Length of data pointer:  4
+Address of data pointer: 0x7fff180a5250
+Data pointer:            0x1255c80
+Container: 1 2 3 4 
+Length of data pointer:  4
+Address of data pointer: 0x7fff180a5260
+Data pointer:            0x1254c20
+Container: 1 2 3 4 
+Length of data pointer:  0
+Address of data pointer: 0x7fff180a5230
+Data pointer:            0
+Container: 
+Length of data pointer:  4
+Address of data pointer: 0x7fff180a5270
+Data pointer:            0x1255cb0
+Container: 1 2 3 4 

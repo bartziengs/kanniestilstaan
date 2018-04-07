@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/arrays.dir/src/arrays.cxx.o  -o arrays -rdynamic 
