@@ -45,8 +45,8 @@ public:
       : size(v.size),
         elements(v.elements)
   {
-    v.elements = 0;
-    v.data = nullptr;
+    v.size = 0;
+    v.elements = nullptr;
   }
 
   private:
@@ -103,7 +103,6 @@ int main()
     Vector<int> a = 5;
     // Vector<int> c = { 1, 2, 3, 4 };
     int b[] = { 1, 2, 3, 4 };
-    Vector<int> c = b;
     // std::cout << b[3] << std::endl;
 	Matrix<double> M(10,20);
 	//M[{1,1}] = 69;
