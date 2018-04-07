@@ -1,0 +1,19 @@
+#include<iostream>	
+
+Template<Typename T>
+class Matrix {
+private:
+	T data;
+	int rows, columns;
+public:
+	Matrix()
+    	: data(nullptr), rows(0), colums(0) {}
+
+    	Matrix(int rows, int columns)
+    	: data(new T[rows, columns]), rows(rows), columns(columns) {}
+
+int main()
+{
+std::cout << "test" << std::endl;
+return 0;
+}
