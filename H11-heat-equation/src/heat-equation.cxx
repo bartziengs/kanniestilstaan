@@ -97,15 +97,5 @@ public:
     //}
 
 // MAIN #####################################################################
-int main()
-{
-    std::cout << "test" << std::endl;
-    Vector<int> a = 5;
-    // Vector<int> c = { 1, 2, 3, 4 };
-    int b[] = { 1, 2, 3, 4 };
-    // std::cout << b[3] << std::endl;
-	Matrix<double> M(10,20);
-	//M[{1,1}] = 69;
-return 0;
-}
+
 
