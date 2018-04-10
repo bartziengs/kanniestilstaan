@@ -143,6 +143,14 @@ public:
   }
 };
 
+//scalar multiplication (still incomplete, works only for same types)
+template(scalarmultiplication)<typename T>
+  Vector<T> &operator*=(T scalar, Vector<T>& vector )
+  {
+        return vector*=scalar;
+  };
+
+// Part 2 ####################################################################
 template <typename T>
 class Matrix {
 private:
@@ -162,6 +170,7 @@ public:
 		//Matrix[{a,b}] = 
 
 };
+
 
 int main() {
   std::cout << "test" << std::endl;
@@ -188,5 +197,7 @@ int main() {
   int y = a.dot(c);
   std::cout << y << std::endl;
 
+	Matrix<double> M(3,4);
+  std::cout << z << std::endl;
   return 0;
 }
