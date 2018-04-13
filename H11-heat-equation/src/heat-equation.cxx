@@ -165,7 +165,7 @@ public:
   std::map<std::array<int, 2>, T> M;
   const int rows, columns;
 
-  Matrix() //default construct
+  Matrix() //default constructor
       : rows(0), columns(0)
   {
   }
@@ -175,8 +175,11 @@ public:
   {
   }
 
+  //matrix vector product with check for appropriate dimensions
   Vector<T> matvec(Vector<T> &v)
   {
+    if (columns != v.size)
+      throw std::invalid_argument("Vectors are of unequal length");
     Vector<T> res(columns);
     for (int i = 0; i < rows; i++)
     {
