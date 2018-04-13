@@ -1,8 +1,10 @@
 #include <iostream>
+#include <string>
 #include <memory>
 #include <typeinfo>
 #include <stdexcept>
-
+#include <map>
+#include <array>
 // PART 1 ###################################################################
 
 template <typename T>
@@ -59,9 +61,10 @@ public:
       delete[] elements;
       size = other.size;
       elements = new T[other.size];
-      for (auto i = 0; i < other.size; i++)
+      for (auto i = 0; i < size; i++)
         elements[i] = other.elements[i];
     }
+
     return *this;
   }
 
@@ -76,6 +79,7 @@ public:
       other.size = 0;
       other.elements = nullptr;
     }
+
     return *this;
   }
 
@@ -109,23 +113,34 @@ public:
     return res;
   }
 
-  //scalar multiplication (still incomplete, workds only for same types)
-  Vector<T> &operator*=(T scalar)
+  //scalar multiplication with other type
+  template <typename S>
+  auto &multiply(S scalar)
   {
     for (auto i = 0; i < size; i++)
       elements[i] *= scalar;
     return *this;
   }
 
+  //multiply with same type
+  Vector<T> &multiply(T scalar)
+  {
+    for (auto i = 0; i < size; i++)
+      elements[i] *= scalar;
+    std::cout << "testHUH" << std::endl;
 
-  //dot implementation, other than in descripton but shorter and functionally equivalent
-  T dot(const Vector<T> &v){
-    if (size != v.size)
+    return *this;
+  }
+
+  //dot product
+  T dot(const Vector<T> &l, const Vector<T> &r)
+  {
+    if (l.size != r.size)
       throw std::invalid_argument("Vectors are of unequal length");
     T res = 0;
-    for(int i = 0; i < size; i++)
+    for (int i = 0; i < size; i++)
     {
-      res += elements[i]*v.elements[i];
+      res += l.elements[i] * r.elements[i];
     }
     return res;
   }
@@ -144,36 +159,62 @@ public:
 };
 
 template <typename T>
-class Matrix {
-private:
-	T* data;
-	int rows, columns, a, b;
-	double x;
+class Matrix
+{
 public:
-		Matrix() //default construct
-    	: data(nullptr), rows(0), columns(0) {} 
+  std::map<std::array<int, 2>, T> M;
+  const int rows, columns;
 
-    	Matrix(int rows, int columns) //dimensions specified
-    	: data(new T[rows, columns]), rows(rows), columns(columns) {}
-		
-		// Attributes
-		// Initialize elements
-		//double 
-		//Matrix[{a,b}] = 
+  Matrix() //default construct
+      : rows(0), columns(0)
+  {
+  }
+
+  Matrix(int rows, int columns) //dimensions specified
+      : rows(rows), columns(columns)
+  {
+  }
+
+  Vector<T> matvec(Vector<T> &v)
+  {
+    Vector<T> res(columns);
+    for (int i = 0; i < rows; i++)
+    {
+      for (int j = 0; j < columns; j++)
+      {
+        res.elements[i] += M[{i,j}] * v.elements[j];
+      }
+    }
+    return res;
+  }
+
 
 };
 
-int main() {
-  std::cout << "test" << std::endl;
+int main()
+{
   Vector<int> a = {2, 4, 6, 122};
-  Vector<int> V(3);
+  Vector<double> v = {1, 2, 3, 4, 5, 5, 4, 3, 2, 1};
   Vector<double> doubleVector = {1.5, 2.5, 3.5, 4.5};
   Vector<double> anotherDouble(doubleVector);
-  // auto e = std::move(a);
+
+  Matrix<double> M(10, 10);
+  M.M[{0, 0}] = 1.0;
+  M.M[{1, 2}] = 2.0;
+
+  // std::cout << M.M[{1,2}] << std::endl;
+  auto mv = M.matvec(v);
+
   // a.info();
   Vector<int> b = {1, 2, 3, 4};
-  Vector<int> c(b); //copy assignment
-  // Vector<int> d(std::move(b)); //move assignment
+  b.multiply<double>(4.4);
+  b.info();
+  Vector<int> c(0);
+  c = b;
+  double co = 4.4;
+  // Vector<int> nnnn = 4.4 * b;
+  // c.info();
+  // c = std::move(b); //move assignment
   // c.info();
   auto n = a - doubleVector;
   // n.info();
@@ -181,11 +222,11 @@ int main() {
   // w.info();
   auto res = a + doubleVector;
   // res.info();
-  b.info();
-  auto z = 4 * 5.6;
-  std::cout << z << std::endl;
+  // b.info();
 
-  int y = a.dot(c);
+  // doubleVector.info();
+
+  int y = a.Vector<int>::dot(a, b);
   std::cout << y << std::endl;
 
   return 0;
