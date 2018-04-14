@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <stdexcept>
 #include <map>
+#include <math.h>
 #include <array>
 // PART 1 ###################################################################
 
@@ -190,6 +191,21 @@ public:
     }
     return res;
   }
+
+  void info()
+  {
+    std::cout << "Size of matrix:  " << rows << " x " << columns << std::endl;
+    std::cout << "Entries:" << std::endl;
+    for (int j = 0; j < rows - 1; j++)
+    {
+      std::cout << "[";
+      for (int i = 0; i < columns - 1; i++)
+      {
+        std::cout << M[{j, i}] << ", ";
+      }
+      std::cout << M[{j, rows - 1}] << "]" << std::endl;
+    }
+  }
 };
 
 // PART 3 ######################################################
@@ -201,10 +217,11 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
   T rrnew;
   T beta;
   T alpha;
+  int iter = -1;
 
   auto r = b - A.matvec(x);
   auto p = r;
-  for (auto k = 0; k < maxiter - 1; k++)
+  for (int i = 0; i < maxiter - 1; i++)
   {
     q = A.matvec(p);
     alpha = r.dot(r, r) / p.dot(q, p);
@@ -213,10 +230,14 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
     r += r - alpha * q;
     rrnew = r.dot(r, r);
     if (rrnew < tol * tol)
+    {
+      iter = i;
       break;
+    }
     beta = rrnew / rrold;
     p = r + beta * p;
   }
+  return iter;
 };
 
 // PART 4 ######################
@@ -225,13 +246,12 @@ class Heat1D
 {
 
 public:
-
-Matrix<T> M;
-T alpha;
-int dim;
-double dt;
-double dx;
-double c;
+  Matrix<T> M;
+  T alpha;
+  int dim;
+  double dt;
+  double dx;
+  double c;
 
   Heat1D(T alpha, int dim, double dt)
       : alpha(alpha), dim(dim), dt(dt)
@@ -262,6 +282,28 @@ double c;
     }
   }
 
+  Vector<double> exact(double t) const
+  {
+    Vector<double> w_i(dim);
+    for (int i = 0; i < dim; i++)
+    {
+      w_i.elements[i] = sin(i * M_PI);
+    }
+    Vector<double> w_res(dim);
+    w_res = w_i.multiply(w_i, exp(-M_PI * M_PI * alpha * t));
+  }
+
+  Vector<double> solve(double t_end) const
+  {
+    Vector<double> w_i(dim);
+    Vector<double> w_iPlusOne(dim);
+    for (int i = 0; i < dim; i++)
+    {
+      w_i.elements[i] = sin(i * M_PI);
+    }
+
+    int res = M.cg(M, w_i, w_iPlusOne, 0.01, t_end / dt);
+  }
 };
 
 int main()
@@ -276,6 +318,7 @@ int main()
   Matrix<double> M(10, 10);
   M.M[{0, 0}] = 1.0;
   M.M[{1, 2}] = 2.0;
+  M.info();
 
   // std::cout << M.M[{1,2}] << std::endl;
   auto mv = M.matvec(v);
