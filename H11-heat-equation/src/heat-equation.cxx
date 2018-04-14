@@ -185,46 +185,89 @@ public:
     {
       for (int j = 0; j < columns; j++)
       {
-        res.elements[i] += M[{i,j}] * v.elements[j];
+        res.elements[i] += M[{i, j}] * v.elements[j];
       }
     }
     return res;
   }
-
-
 };
 
 // PART 3 ######################################################
-template<typename T>
-int cg(
-	const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
+template <typename T>
+int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
 {
-	Vector<T> q;
-	T rrold;
-	T rrnew;
-	T beta;
-	T alpha;
+  Vector<T> q;
+  T rrold;
+  T rrnew;
+  T beta;
+  T alpha;
 
-	auto r = b - A.matvec(x);
-	auto p = r;
-	for (auto k = 0; k < maxiter - 1; k++)
-	{
-	q = A.matvec(p);
-	alpha = r.dot(r,r) / p.dot(q,p);
-	x += alpha;
-	rrold = r.dot(r,r);
-	r += r - alpha*q;
-	rrnew = r.dot(r,r);
-	if (rrnew < tol*tol)
-		break;
-	beta = rrnew/rrold;
-	p = r + beta*p;
-	}
-	
+  auto r = b - A.matvec(x);
+  auto p = r;
+  for (auto k = 0; k < maxiter - 1; k++)
+  {
+    q = A.matvec(p);
+    alpha = r.dot(r, r) / p.dot(q, p);
+    x += alpha;
+    rrold = r.dot(r, r);
+    r += r - alpha * q;
+    rrnew = r.dot(r, r);
+    if (rrnew < tol * tol)
+      break;
+    beta = rrnew / rrold;
+    p = r + beta * p;
+  }
+};
+
+// PART 4 ######################
+template <typename T>
+class Heat1D
+{
+
+public:
+
+Matrix<T> M;
+T alpha;
+int dim;
+double dt;
+double dx;
+double c;
+
+  Heat1D(T alpha, int dim, double dt)
+      : alpha(alpha), dim(dim), dt(dt)
+  {
+    dx = 1 / (1 + dim);
+    c = (alpha * dt) / (dx * dx);
+    for (auto i = 0; i < dim; i++)
+    {
+      for (auto j = 0; j < dim; j++)
+      {
+        if (i == j)
+        {
+          M[{i, j}] = 1 + 2 * c;
+        }
+        else if (j = i + 1)
+        {
+          if (i = 0)
+            break;
+          M[{i, j}] = -c;
+        }
+        else if (i = j + 1)
+        {
+          if (i = dim)
+            break;
+          M[{i, j}] = c;
+        }
+      }
+    }
+  }
+
 };
 
 int main()
 {
+  // auto Heat1D<double> solve(0, 222, 3, 0, 2);
+
   Vector<int> a = {2, 4, 6, 122};
   Vector<double> v = {1, 2, 3, 4, 5, 5, 4, 3, 2, 1};
   Vector<double> doubleVector = {1.5, 2.5, 3.5, 4.5};
