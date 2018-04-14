@@ -217,6 +217,8 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
     beta = rrnew / rrold;
     p = r + beta * p;
   }
+return k;
+return x;
 };
 
 // PART 4 ######################
@@ -261,8 +263,52 @@ double c;
       }
     }
   }
-
 };
+
+template <typename T>
+class Heat2D
+{
+
+public:
+
+Matrix<T> M;
+T alpha;
+int dim;
+double dt;
+double dx;
+double c;
+int dim2 = dim*dim;
+
+  Heat2D(T alpha, int dim, double dt)
+      : alpha(alpha), dim(dim), dt(dt)
+  {
+    dx = 1 / (1 + dim);
+    c = (alpha * dt) / (dx * dx);
+    for (auto i = 0; i < dim2; i++)
+    {
+      for (auto j = 0; j < dim2; j++)
+      {
+        if (i == j)
+        {
+          M[{i, j}] = 1 + 2 * c;
+        }
+        else if (j = i + 1)
+        {
+          if (i = 0)
+            break;
+          M[{i, j}] = -c;
+        }
+        else if (i = j + 1)
+        {
+          if (i = dim2)
+            break;
+          M[{i, j}] = c;
+        }
+      }
+    }
+  }
+};
+
 
 int main()
 {
