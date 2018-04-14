@@ -194,6 +194,35 @@ public:
 
 };
 
+// PART 3 ######################################################
+template<typename T>
+int cg(
+	const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
+{
+	Vector<T> q;
+	T rrold;
+	T rrnew;
+	T beta;
+	T alpha;
+
+	auto r = b - A.matvec(x);
+	auto p = r;
+	for (auto k = 0; k < maxiter - 1; k++)
+	{
+	q = A.matvec(p);
+	alpha = r.dot(r,r) / p.dot(q,p);
+	x += alpha;
+	rrold = r.dot(r,r);
+	r += r - alpha*q;
+	rrnew = r.dot(r,r);
+	if (rrnew < tol*tol)
+		break;
+	beta = rrnew/rrold;
+	p = r + beta*p;
+	}
+	
+};
+
 int main()
 {
   Vector<int> a = {2, 4, 6, 122};
