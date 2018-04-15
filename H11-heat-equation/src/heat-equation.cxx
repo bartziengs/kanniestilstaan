@@ -184,7 +184,7 @@ public:
     {
       for (int j = 0; j < columns; j++)
       {
-        res.elements[i] +=  M.at({i,j}) * v.elements[j];
+        res.elements[i] += M.at({i, j}) * v.elements[j];
       }
     }
     return res;
@@ -211,31 +211,29 @@ template <typename T>
 int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
 {
   Vector<T> q;
-  T rrold;
+  T cmp;
   T rrnew;
   T beta;
   T alpha;
   int iter = -1;
+  T r_prev = 0;
+  auto r_i = b;
+  auto r_iPlusOne = r_i;
 
-  auto r = b;
-
-  r = r -   A.matvec(x);
-  auto p = r;
+  r_i = r_i - A.matvec(x);
+  auto p = r_i;
   for (int i = 0; i < maxiter - 1; i++)
   {
-    q = A.matvec(p);
-    alpha = r.dot(r, r) / p.dot(q, p);
+    alpha = r_i.dot(r_i, r_i) / p.dot(A.matvec(p), p);
     x = x + p.multiply(alpha);
-    rrold = r.dot(r, r);
-    r = r - q.multiply(alpha);
-    rrnew = r.dot(r, r);
-    if (rrnew < tol * tol)
+    r_iPlusOne = r_i - A.matvec(p).multiply(alpha);
+    if (r_iPlusOne.dot(r_iPlusOne, r_iPlusOne) < tol * tol)
     {
       iter = i;
       break;
     }
-    beta = rrnew / rrold;
-    p = r + p.multiply(beta);
+    beta = r_iPlusOne.dot(r_iPlusOne, r_iPlusOne) / r_i.dot(r_i, r_i);
+    p = r_iPlusOne + p.multiply(beta);
   }
   return iter;
 };
@@ -297,9 +295,10 @@ public:
     {
       w_i.elements[i] = sin(i * M_PI * dx);
     }
-    for (int i = 0; i < (int)ceil(t_end / dt); i++)
+    int maxIter = (int)ceil(t_end / dt);
+    for (int i = 0; i < maxIter; i++)
     {
-      int res = cg(M, w_i, w_iPlusOne, 0.0001, t_end / dt);
+      int res = cg(M, w_i, w_iPlusOne, 0.05, maxIter);
       w_i = w_iPlusOne;
     }
     return w_iPlusOne;
@@ -316,13 +315,14 @@ public:
   double dt;
   double dx;
   double c;
-  int dim2 = dim * dim;
+  int dim2;
 
   Heat2D(T alpha, int dim, double dt)
       : alpha(alpha), dim(dim), dt(dt)
   {
     dx = 1 / (1 + dim);
     c = (alpha * dt) / (dx * dx);
+    dim2 = dim * dim;
     for (auto i = 0; i < dim2; i++)
     {
       for (auto j = 0; j < dim2; j++)
@@ -350,6 +350,32 @@ public:
       }
     }
   }
+  Vector<double> exact(double t) const
+  {
+    Vector<double> w_i(dim2);
+    for (int i = 0; i < dim2; i++)
+    {
+      w_i.elements[i] = sin(i * M_PI * dx);
+    }
+    return w_i.multiply(exp(-2 * M_PI * M_PI * alpha * t));
+  }
+
+  Vector<double> solve(double t_end) const
+  {
+    Vector<double> w_i(dim2);
+    Vector<double> w_iPlusOne(dim2);
+    for (int i = 0; i < dim2; i++)
+    {
+      w_i.elements[i] = sin(i * M_PI * dx);
+    }
+    int maxIter = (int)ceil(t_end / dt);
+    for (int i = 0; i < maxIter; i++)
+    {
+      int res = cg(M, w_i, w_iPlusOne, 0.05, maxIter);
+      w_i = w_iPlusOne;
+    }
+    return w_iPlusOne;
+  }
 };
 
 int main()
@@ -370,7 +396,7 @@ int main()
   // auto mv = M.matvec(v);
 
   // a.info();
-  // Vector<int> b = {1, 2, 3, 4};
+  // Vector<int> testb = {1, 2, 3, 4};
   // b.multiply<double>(4.4);
   // b.info();
   // Vector<int> c(0);
@@ -386,7 +412,8 @@ int main()
   // w.info();
   // auto res = a + doubleVector;
   // res.info();
-  // b.info();
+  // testb.info();
+  // auto testv = testb;
 
   // doubleVector.info();
 
@@ -395,8 +422,8 @@ int main()
   std::cout << "Evaluating the solution for:" << std::endl;
 
   double alpha = 0.3125;
-  int dim = 3;
-  double dt = 0.1;
+  int dim = 15;
+  double dt = 0.001;
   double t_end = 1;
 
   Heat1D<double> sol(alpha, dim, dt);
