@@ -297,7 +297,7 @@ public:
     int maxIter = (int)ceil(t_end / dt);
     for (int i = 0; i < maxIter; i++)
     {
-      int res = cg(M, w_i, w_iPlusOne, 0.05, maxIter);
+      int res = cg(M, w_i, w_iPlusOne, 0.01, maxIter);
       w_i = w_iPlusOne;
     }
     return w_iPlusOne;
@@ -330,19 +330,19 @@ public:
         {
           M.M[{i, j}] = 1 + 2 * c;
         }
-        else if (j = i - 1)
+        else if (j == i - 1)
         {
           M.M[{i, j}] = -c;
         }
-        else if (j = i + 1)
+        else if (j == i + 1)
         {
           M.M[{i, j}] = -c;
         }
-        else if (j = i + dim)
+        else if (j == i + dim)
         {
           M.M[{i, j}] = -c;
         }
-        else if (j = i - dim)
+        else if (j == i - dim)
         {
           M.M[{i, j}] = -c;
         }
@@ -364,6 +364,76 @@ public:
     Vector<double> w_i(dim2);
     Vector<double> w_iPlusOne(dim2);
     for (int i = 0; i < dim2; i++)
+    {
+      w_i.elements[i] = sin(i * M_PI * dx);
+    }
+    int maxIter = (int)ceil(t_end / dt);
+    for (int i = 0; i < maxIter; i++)
+    {
+      int res = cg(M, w_i, w_iPlusOne, 0.01, maxIter);
+      w_i = w_iPlusOne;
+    }
+    return w_iPlusOne;
+  }
+};
+
+template <typename T>
+class Heat
+{
+
+public:
+  Matrix<T> M;
+  T alpha;
+  int dim, n, dimn;
+  double dt;
+  double dx;
+  double c;
+
+  Heat(T alpha, int dim, double dt, int n)
+      : alpha(alpha), dim(dim), dt(dt), n(n)
+  {
+    dimn = pow(dim, n);
+    M.rows = dimn;
+    M.columns = dimn;
+    dx = (double)1 / (1 + dim);
+    c = (alpha * dt) / (dx * dx);
+    for (int i = 0; i < dim; i++)
+    {
+      for (int j = 0; j < dim; j++)
+      {
+        for (int k = 0; k < n; k++)
+        {
+          if (i == j)
+          {
+            M.M[{i, j}] = 1 + 2 * c;
+          }
+          else if (j == i - pow(dim, k))
+          {
+            M.M[{i, j}] = -c;
+          }
+          else if (j == i + pow(dim, k))
+          {
+            M.M[{i, j}] = -c;
+          }
+        }
+      }
+    }
+  }
+  Vector<double> exact(double t) const
+  {
+    Vector<double> w_i(dimn);
+    for (int i = 0; i < dimn; i++)
+    {
+      w_i.elements[i] = sin(i * M_PI * dx);
+    }
+    return w_i.multiply(exp(-n * M_PI * M_PI * alpha * t));
+  }
+
+  Vector<double> solve(double t_end) const
+  {
+    Vector<double> w_i(dimn);
+    Vector<double> w_iPlusOne(dimn);
+    for (int i = 0; i < dimn; i++)
     {
       w_i.elements[i] = sin(i * M_PI * dx);
     }
