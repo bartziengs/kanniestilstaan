@@ -184,7 +184,7 @@ public:
     {
       for (int j = 0; j < columns; j++)
       {
-        res.elements[i] += M.at({i, j}) * v.elements[j];
+        res.elements[i] += (M.at({i, j}) * v.elements[j]);
       }
     }
     return res;
@@ -210,30 +210,26 @@ public:
 template <typename T>
 int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
 {
-  Vector<T> q;
-  T cmp;
-  T rrnew;
   T beta;
   T alpha;
   int iter = -1;
-  T r_prev = 0;
   auto r_i = b;
-  auto r_iPlusOne = r_i;
+  auto r_iPlusOne = b;
 
-  r_i = r_i - A.matvec(x);
+  r_i = std::move(r_i - A.matvec(x));
   auto p = r_i;
   for (int i = 0; i < maxiter - 1; i++)
   {
     alpha = r_i.dot(r_i, r_i) / p.dot(A.matvec(p), p);
-    x = x + p.multiply(alpha);
-    r_iPlusOne = r_i - A.matvec(p).multiply(alpha);
+    x = std::move(x + p.multiply(alpha));
+    r_iPlusOne = (r_i - A.matvec(p).multiply(alpha));
     if (r_iPlusOne.dot(r_iPlusOne, r_iPlusOne) < tol * tol)
     {
       iter = i;
       break;
     }
     beta = r_iPlusOne.dot(r_iPlusOne, r_iPlusOne) / r_i.dot(r_i, r_i);
-    p = r_iPlusOne + p.multiply(beta);
+    p = std::move(r_iPlusOne + p.multiply(beta));
   }
   return iter;
 };
@@ -257,6 +253,7 @@ public:
     M.rows = dim;
     M.columns = dim;
     dx = (double)1 / (1 + dim);
+    std::cout << "dx : " << dx << std::endl;
     c = (alpha * dt) / (dx * dx);
     for (int i = 0; i < dim; i++)
     {
@@ -280,10 +277,11 @@ public:
   Vector<double> exact(double t) const
   {
     Vector<double> w_i(dim);
-    for (int i = 0; i < dim; i++)
+    for (int i = 0, j = 1; i < dim; j++, i++)
     {
-      w_i.elements[i] = sin(i * M_PI * dx);
+      w_i.elements[i] = sin(j * M_PI * dx);
     }
+    w_i.info();
     return w_i.multiply(exp(-M_PI * M_PI * alpha * t));
   }
 
@@ -291,10 +289,11 @@ public:
   {
     Vector<double> w_i(dim);
     Vector<double> w_iPlusOne(dim);
-    for (int i = 0; i < dim; i++)
+      for (int i = 0, j = 1; i < dim; j++, i++)
     {
-      w_i.elements[i] = sin(i * M_PI * dx);
+      w_i.elements[i] = sin(j * M_PI * dx);
     }
+
     int maxIter = (int)ceil(t_end / dt);
     for (int i = 0; i < maxIter; i++)
     {
@@ -424,7 +423,7 @@ int main()
   double alpha = 0.3125;
   int dim = 15;
   double dt = 0.001;
-  double t_end = 1;
+  double t_end = .001;
 
   Heat1D<double> sol(alpha, dim, dt);
   sol.M.info();
@@ -440,6 +439,9 @@ int main()
   std::cout << "dim = " << dim << std::endl;
   std::cout << "dt = " << dt << "s" << std::endl;
   std::cout << "At t = " << t_end << "s" << std::endl;
+
+  Heat1D<double> sol2(0.3125, 3, 0.1);
+  sol2.M.info();
 
   //std::cout << "Exact solution is" << sol.exact(1) << std::endl;
 
