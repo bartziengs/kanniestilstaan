@@ -423,7 +423,7 @@ int main()
   double alpha = 0.3125;
   int dim = 15;
   double dt = 0.001;
-  double t_end = .001;
+  double t_end = 1;
 
   Heat1D<double> sol(alpha, dim, dt);
   sol.M.info();
