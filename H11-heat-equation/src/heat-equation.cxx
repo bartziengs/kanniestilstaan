@@ -264,19 +264,19 @@ public:
       {
         if (i == j)
         {
-          M[{i, j}] = 1 + 2 * c;
+          M.M[{i, j}] = 1 + 2 * c;
         }
-        else if (j = i + 1)
+        else if (j = i - 1)
         {
           if (i = 0)
             break;
-          M[{i, j}] = -c;
+          M.M[{i, j}] = -c;
         }
-        else if (i = j + 1)
+        else if (j = i + 1)
         {
           if (i = dim)
             break;
-          M[{i, j}] = c;
+          M.M[{i, j}] = -c;
         }
       }
     }
@@ -289,7 +289,7 @@ public:
       w_i.elements[i] = sin(i * M_PI);
     }
     Vector<double> w_res(dim);
-    w_res = w_i.multiply(w_i, exp(-M_PI * M_PI * alpha * t));
+    w_res = w_res.dot(w_res,w_i).multiply(exp(-M_PI * M_PI * alpha * t));
   }
 
  Vector<double> solve(double t_end) const
@@ -309,7 +309,6 @@ public:
 template <typename T>
 class Heat2D
 {
-
 public:
 Matrix<T> M;
 T alpha;
@@ -324,26 +323,34 @@ int dim2 = dim*dim;
   {
     dx = 1 / (1 + dim);
     c = (alpha * dt) / (dx * dx);
-    for (auto i = 0; i < dim2; i++)
+    for (auto i = 0; i < dim; i++)
     {
-      for (auto j = 0; j < dim2; j++)
+      for (auto j = 0; j < dim; j++)
       {
         if (i == j)
         {
-          M[{i, j}] = 1 + 2 * c;
+          M.M[{i, j}] = 1 + 2 * c;
         }
-        else if (j = i + 1)
+        else if (j = i - 1)
         {
           if (i = 0)
             break;
-          M[{i, j}] = -c;
+          M.M[{i, j}] = -c;
         }
-        else if (i = j + 1)
+        else if (j = i + 1)
         {
-          if (i = dim2)
+          if (i = dim)
             break;
-          M[{i, j}] = c;
+          M.M[{i, j}] = -c;
         }
+	else if (j = i + dim);
+	  if (i + dim > dim2)
+	    break;
+	  M.M[{i,j}] = -c;
+	else if (j = i - dim);
+	  if (i - dim > dim2)
+	    break;
+	  M.M[{i,j}] = -c;
       }
     }
   }
@@ -351,7 +358,7 @@ int dim2 = dim*dim;
 
 int main()
 {
-  // auto Heat1D<double> solve(0, 222, 3, 0, 2);
+  //auto Heat1D<double> solve(0, 222, 3, 0, 2);
 
   Vector<int> a = {2, 4, 6, 122};
   Vector<double> v = {1, 2, 3, 4, 5, 5, 4, 3, 2, 1};
@@ -361,34 +368,51 @@ int main()
   Matrix<double> M(10, 10);
   M.M[{0, 0}] = 1.0;
   M.M[{1, 2}] = 2.0;
-  M.info();
+  // M.info();
 
   // std::cout << M.M[{1,2}] << std::endl;
-  auto mv = M.matvec(v);
+  // auto mv = M.matvec(v);
 
   // a.info();
-  Vector<int> b = {1, 2, 3, 4};
-  b.multiply<double>(4.4);
-  b.info();
-  Vector<int> c(0);
-  c = b;
-  double co = 4.4;
+  // Vector<int> b = {1, 2, 3, 4};
+  // b.multiply<double>(4.4);
+  // b.info();
+  // Vector<int> c(0);
+  // c = b;
+  // double co = 4.4;
   // Vector<int> nnnn = 4.4 * b;
   // c.info();
   // c = std::move(b); //move assignment
   // c.info();
-  auto n = a - doubleVector;
+  // auto n = a - doubleVector;
   // n.info();
-  auto w = a + b;
+  // auto w = a + b;
   // w.info();
-  auto res = a + doubleVector;
+  // auto res = a + doubleVector;
   // res.info();
   // b.info();
 
   // doubleVector.info();
 
-  int y = a.Vector<int>::dot(a, b);
-  std::cout << y << std::endl;
+  // int y = a.Vector<int>::dot(a, b);
+  // std::cout << y << std::endl;
+
+ double alpha = 0.3125;
+ int dim = 3;
+ double dt = 0.001;
+ double t_end = 1.0;
+
+
+ Heat1D<double> sol(alpha, dim, dt);
+ Vector<double> b = sol.exact(t_end);
+ std::cout << "Evaluating the solution for:" << std::endl;
+ std::cout << "Alpha = " << alpha << std::endl;
+ std::cout << "dim = " << dim << std::endl;
+ std::cout << "dt = " << dt <<  "s" <<std::endl;
+ std::cout << "At t = " << t_end <<  "s" <<std::endl;
+
+ //std::cout << "Exact solution is" << sol.exact(1) << std::endl;
+
 
   return 0;
 }
