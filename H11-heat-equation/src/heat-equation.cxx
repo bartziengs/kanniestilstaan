@@ -128,8 +128,6 @@ public:
   {
     for (auto i = 0; i < size; i++)
       elements[i] *= scalar;
-    std::cout << "testHUH" << std::endl;
-
     return *this;
   }
 
@@ -164,7 +162,7 @@ class Matrix
 {
 public:
   std::map<std::array<int, 2>, T> M;
-  const int rows, columns;
+  int rows, columns;
 
   Matrix() //default constructor
       : rows(0), columns(0)
@@ -177,7 +175,7 @@ public:
   }
 
   //matrix vector product with check for appropriate dimensions
-  Vector<T> matvec(Vector<T> &v)
+  Vector<T> matvec(Vector<T> &v) const
   {
     if (columns != v.size)
       throw std::invalid_argument("Vectors are of unequal length");
@@ -186,7 +184,7 @@ public:
     {
       for (int j = 0; j < columns; j++)
       {
-        res.elements[i] += M[{i, j}] * v.elements[j];
+        res.elements[i] +=  M.at({i,j}) * v.elements[j];
       }
     }
     return res;
@@ -196,7 +194,7 @@ public:
   {
     std::cout << "Size of matrix:  " << rows << " x " << columns << std::endl;
     std::cout << "Entries:" << std::endl;
-    for (int j = 0; j < rows - 1; j++)
+    for (int j = 0; j < rows; j++)
     {
       std::cout << "[";
       for (int i = 0; i < columns - 1; i++)
@@ -219,15 +217,17 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
   T alpha;
   int iter = -1;
 
-  auto r = b - A.matvec(x);
+  auto r = b;
+
+  r = r -   A.matvec(x);
   auto p = r;
   for (int i = 0; i < maxiter - 1; i++)
   {
     q = A.matvec(p);
     alpha = r.dot(r, r) / p.dot(q, p);
-    x += alpha;
+    x = x + p.multiply(alpha);
     rrold = r.dot(r, r);
-    r += r - alpha * q;
+    r = r - q.multiply(alpha);
     rrnew = r.dot(r, r);
     if (rrnew < tol * tol)
     {
@@ -235,7 +235,7 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
       break;
     }
     beta = rrnew / rrold;
-    p = r + beta * p;
+    p = r + p.multiply(beta);
   }
   return iter;
 };
@@ -256,26 +256,24 @@ public:
   Heat1D(T alpha, int dim, double dt)
       : alpha(alpha), dim(dim), dt(dt)
   {
-    dx = 1 / (1 + dim);
+    M.rows = dim;
+    M.columns = dim;
+    dx = (double)1 / (1 + dim);
     c = (alpha * dt) / (dx * dx);
-    for (auto i = 0; i < dim; i++)
+    for (int i = 0; i < dim; i++)
     {
-      for (auto j = 0; j < dim; j++)
+      for (int j = 0; j < dim; j++)
       {
         if (i == j)
         {
           M.M[{i, j}] = 1 + 2 * c;
         }
-        else if (j = i - 1)
+        else if (j == i - 1)
         {
-          if (i = 0)
-            break;
           M.M[{i, j}] = -c;
         }
-        else if (j = i + 1)
+        else if (j == i + 1)
         {
-          if (i = dim)
-            break;
           M.M[{i, j}] = -c;
         }
       }
@@ -297,10 +295,14 @@ public:
     Vector<double> w_iPlusOne(dim);
     for (int i = 0; i < dim; i++)
     {
-      w_i.elements[i] = sin(i * M_PI);
+      w_i.elements[i] = sin(i * M_PI * dx);
     }
-
-    int res = M.cg(M, w_i, w_iPlusOne, 0.01, t_end / dt);
+    for (int i = 0; i < (int)ceil(t_end / dt); i++)
+    {
+      int res = cg(M, w_i, w_iPlusOne, 0.0001, t_end / dt);
+      w_i = w_iPlusOne;
+    }
+    return w_iPlusOne;
   }
 };
 
@@ -390,14 +392,22 @@ int main()
 
   // int y = a.Vector<int>::dot(a, b);
   // std::cout << y << std::endl;
+  std::cout << "Evaluating the solution for:" << std::endl;
 
   double alpha = 0.3125;
   int dim = 3;
-  double dt = 0.001;
-  double t_end = 0.002;
+  double dt = 0.1;
+  double t_end = 1;
 
   Heat1D<double> sol(alpha, dim, dt);
+  sol.M.info();
   Vector<double> b = sol.exact(t_end);
+  std::cout << "Vector b (exact result)" << std::endl;
+  b.info();
+
+  auto ruben = sol.solve(t_end);
+  std::cout << "Vector ruben (solved result)" << std::endl;
+  ruben.info();
   std::cout << "Evaluating the solution for:" << std::endl;
   std::cout << "Alpha = " << alpha << std::endl;
   std::cout << "dim = " << dim << std::endl;
