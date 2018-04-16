@@ -319,9 +319,11 @@ public:
   Heat2D(T alpha, int dim, double dt)
       : alpha(alpha), dim(dim), dt(dt)
   {
-    dx = 1 / (1 + dim);
+    dx = (double)1 / (1 + dim);
     c = (alpha * dt) / (dx * dx);
     dim2 = dim * dim;
+    M.rows = dim2;
+    M.columns = dim2;
     for (auto i = 0; i < dim2; i++)
     {
       for (auto j = 0; j < dim2; j++)
@@ -496,6 +498,7 @@ int main()
   double t_end = 1;
 
   Heat1D<double> sol(alpha, dim, dt);
+  Heat2D<double> sol2(alpha, 3, 0.1);
   sol.M.info();
   Vector<double> b = sol.exact(t_end);
   std::cout << "Vector b (exact result)" << std::endl;
@@ -510,7 +513,7 @@ int main()
   std::cout << "dt = " << dt << "s" << std::endl;
   std::cout << "At t = " << t_end << "s" << std::endl;
 
-  Heat1D<double> sol2(0.3125, 3, 0.1);
+  // Heat1D<double> sol2(0.3125, 3, 0.1);
   sol2.M.info();
 
   //std::cout << "Exact solution is" << sol.exact(1) << std::endl;
