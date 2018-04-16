@@ -272,11 +272,11 @@ public:
         }
         else if (j == i - 1)
         {
-          M.M[{i, j}] = -c;
+          M.M[{i, j}] = -2*c;
         }
         else if (j == i + 1)
         {
-          M.M[{i, j}] = -c;
+          M.M[{i, j}] = -2*c;
         }
       }
     }
@@ -337,23 +337,23 @@ public:
       {
         if (i == j)
         {
-          M.M[{i, j}] = 1 + 2 * c;
+          M.M[{i, j}] = 1 + 4 * c;
         }
         else if (j == i - 1)
         {
-          M.M[{i, j}] = -c;
+          M.M[{i, j}] = -2 * c;
         }
         else if (j == i + 1)
         {
-          M.M[{i, j}] = -c;
+          M.M[{i, j}] = -2* c;
         }
         else if (j == i + dim)
         {
-          M.M[{i, j}] = -c;
+          M.M[{i, j}] = -2 * c;
         }
         else if (j == i - dim)
         {
-          M.M[{i, j}] = -c;
+          M.M[{i, j}] = -2 * c;
         }
       }
     }
@@ -361,9 +361,9 @@ public:
   Vector<double> exact(double t) const
   {
     Vector<double> w_i(dim2);
-    for (int i = 0; i < dim2; i++)
+    for (int i = 0, j = 1; i < dim2; j++, i++)
     {
-      w_i.elements[i] = sin(i * M_PI * dx);
+      w_i.elements[i] = sin(j * M_PI * dx);
     }
     return w_i * (-2 * M_PI * M_PI * alpha * t);
   }
@@ -406,23 +406,23 @@ public:
     M.columns = dimn;
     dx = (double)1 / (1 + dim);
     c = (alpha * dt) / (dx * dx);
-    for (int i = 0; i < dim; i++)
+    for (int i = 0; i < dimn; i++)
     {
-      for (int j = 0; j < dim; j++)
+      for (int j = 0; j < dimn; j++)
       {
         for (int k = 0; k < n; k++)
         {
           if (i == j)
           {
-            M.M[{i, j}] = 1 + 2 * c;
-          }
-          else if (j == i - pow(dim, k))
-          {
-            M.M[{i, j}] = -c;
+            M.M[{i, j}] = 1 + n * 2 * c;
           }
           else if (j == i + pow(dim, k))
           {
-            M.M[{i, j}] = -c;
+            M.M[{i, j}] = - n * c;
+          }
+          else if (j == i - pow(dim, k))
+          {
+            M.M[{i, j}] = - n * c;
           }
         }
       }
@@ -431,9 +431,9 @@ public:
   Vector<double> exact(double t) const
   {
     Vector<double> w_i(dimn);
-    for (int i = 0; i < dimn; i++)
+    for (int i = 0, j = 1; i < dimn; j++, i++)
     {
-      w_i.elements[i] = sin(i * M_PI * dx);
+      w_i.elements[i] = sin(j * M_PI * dx);
     }
     return w_i * exp(-n * M_PI * M_PI * alpha * t);
   }
@@ -502,19 +502,17 @@ int main()
   std::cout << "Evaluating the solution for:" << std::endl;
 
   double alpha = 0.3125;
-  int dim = 15;
+  int dim = 2;
   double dt = 0.001;
-  double t_end = 1;
+  double t_end = .04;
 
   Heat1D<double> sol(alpha, dim, dt);
-  Heat2D<double> sol2(alpha, 3, 0.1);
   sol.M.info();
   Vector<double> b = sol.exact(t_end);
-  std::cout << "Vector b (exact result)" << std::endl;
+  std::cout << "Vector U (exact result)" << std::endl;
   b.info();
-
   auto ruben = sol.solve(t_end);
-  std::cout << "Vector ruben (solved result)" << std::endl;
+  std::cout << "Vector W (solved result)" << std::endl;
   ruben.info();
   std::cout << "Evaluating the solution for:" << std::endl;
   std::cout << "Alpha = " << alpha << std::endl;
@@ -522,8 +520,20 @@ int main()
   std::cout << "dt = " << dt << "s" << std::endl;
   std::cout << "At t = " << t_end << "s" << std::endl;
 
-  // Heat1D<double> sol2(0.3125, 3, 0.1);
+  Heat2D<double> sol2(alpha, dim, dt);
   sol2.M.info();
+  auto U2 = sol2.exact(t_end);
+  auto W2 = sol2.solve(t_end);
+  U2.info();
+  W2.info();
+
+	Heat<double> soln(alpha, dim, dt, 3);
+	soln.M.info();
+  auto Un = soln.exact(t_end);
+  auto Wn = soln.solve(t_end);
+  Un.info();
+  Wn.info();
+
 
   //std::cout << "Exact solution is" << sol.exact(1) << std::endl;
 
