@@ -272,11 +272,11 @@ public:
         }
         else if (j == i - 1)
         {
-          M.M[{i, j}] = -2*c;
+          M.M[{i, j}] = -c;
         }
         else if (j == i + 1)
         {
-          M.M[{i, j}] = -2*c;
+          M.M[{i, j}] = -c;
         }
       }
     }
@@ -288,7 +288,7 @@ public:
     {
       w_i.elements[i] = sin(j * M_PI * dx);
     }
-    w_i.info();
+    //w_i.info();
     return w_i * exp(-M_PI * M_PI * alpha * t);
   }
 
@@ -341,19 +341,19 @@ public:
         }
         else if (j == i - 1)
         {
-          M.M[{i, j}] = -2 * c;
+          M.M[{i, j}] = -c;
         }
         else if (j == i + 1)
         {
-          M.M[{i, j}] = -2* c;
+          M.M[{i, j}] = -c;
         }
         else if (j == i + dim)
         {
-          M.M[{i, j}] = -2 * c;
+          M.M[{i, j}] = -c;
         }
         else if (j == i - dim)
         {
-          M.M[{i, j}] = -2 * c;
+          M.M[{i, j}] = -c;
         }
       }
     }
@@ -468,37 +468,48 @@ int main()
   std::cout << "Evaluating the solution for:" << std::endl;
 
   double alpha = 0.3125;
-  int dim = 2;
+  int dim = 3;
   double dt = 0.001;
-  double t_end = .04;
+  double t_end = 1;
 
-  Heat1D<double> sol(alpha, dim, dt);
-  sol.M.info();
-  Vector<double> b = sol.exact(t_end);
-  std::cout << "Vector U (exact result)" << std::endl;
-  b.info();
-  auto ruben = sol.solve(t_end);
-  std::cout << "Vector W (solved result)" << std::endl;
-  ruben.info();
-  std::cout << "Evaluating the solution for:" << std::endl;
+  std::cout << "Evaluating the solutions for:" << std::endl;
   std::cout << "Alpha = " << alpha << std::endl;
   std::cout << "dim = " << dim << std::endl;
   std::cout << "dt = " << dt << "s" << std::endl;
   std::cout << "At t = " << t_end << "s" << std::endl;
 
+  Heat1D<double> sol(alpha, dim, dt);
+	std::cout << "Matrix M1D: " << std::endl;
+  sol.M.info();
+  Vector<double> b = sol.exact(t_end);
+  std::cout << "Vector U1D (exact result)" << std::endl;
+  b.info();
+  auto ruben = sol.solve(t_end);
+  std::cout << "Vector W1D (solved result)" << std::endl;
+  ruben.info();
+	std::cout << " " << std::endl;
+
+
   Heat2D<double> sol2(alpha, dim, dt);
-  sol2.M.info();
   auto U2 = sol2.exact(t_end);
   auto W2 = sol2.solve(t_end);
+	std::cout << "Matrix M2D: " << std::endl;
+  sol.M.info();
+  std::cout << "Vector U2D (exact result)" << std::endl;
   U2.info();
-  W2.info();
+  std::cout << "Vector W2D (solved result)" << std::endl;
+	W2.info();
+	std::cout << " " << std::endl;
 
-	Heat<double> soln(alpha, dim, dt, 3);
-	soln.M.info();
-  auto Un = soln.exact(t_end);
-  auto Wn = soln.solve(t_end);
-  Un.info();
-  Wn.info();
+
+
+
+	//Heat<double> soln(alpha, dim, dt, 3);
+	//soln.M.info();
+  //auto Un = soln.exact(t_end);
+  //auto Wn = soln.solve(t_end);
+  //Un.info();
+  //Wn.info();
 
 
   //std::cout << "Exact solution is" << sol.exact(1) << std::endl;
