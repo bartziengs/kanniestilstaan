@@ -147,8 +147,9 @@ auto operator*(const T1 s1, const Vector<T2> &v2)
 {
   Vector<typename std::common_type<T1, T2>::type> res(v2.size);
   for (int i = 0; i < v2.size; i++)
+  {
     res.elements[i] = s1 * v2.elements[i];
-
+  }
   return res;
 };
 
@@ -158,8 +159,9 @@ auto operator*(const Vector<T1> &v1, const T2 s2)
 {
   Vector<typename std::common_type<T1, T2>::type> res(v1.size);
   for (int i = 0; i < v1.size; i++)
+  {
     res.elements[i] = v1.elements[i] * s2;
-
+  }
   return res;
 };
 
@@ -229,7 +231,7 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
     Vector<T> AP = A.matvec(p);
     alpha = dot(r_i, r_i) / dot(AP, p);
     x = std::move(x + p * alpha);
-    r_iPlusOne = r_i - AP * alpha;
+    r_iPlusOne = (r_i - AP * alpha);
     if (dot(r_iPlusOne, r_iPlusOne) < tol * tol)
     {
       iter = i;
@@ -272,15 +274,16 @@ public:
         }
         else if (j == i - 1)
         {
-          M.M[{i, j}] = -2*c;
+          M.M[{i, j}] = -c;
         }
         else if (j == i + 1)
         {
-          M.M[{i, j}] = -2*c;
+          M.M[{i, j}] = -c;
         }
       }
     }
   }
+
   Vector<double> exact(double t) const
   {
     Vector<double> w_i(dim);
@@ -345,7 +348,7 @@ public:
         }
         else if (j == i + 1)
         {
-          M.M[{i, j}] = -2* c;
+          M.M[{i, j}] = -2 * c;
         }
         else if (j == i + dim)
         {
@@ -418,11 +421,11 @@ public:
           }
           else if (j == i + pow(dim, k))
           {
-            M.M[{i, j}] = - n * c;
+            M.M[{i, j}] = -n * c;
           }
           else if (j == i - pow(dim, k))
           {
-            M.M[{i, j}] = - n * c;
+            M.M[{i, j}] = -n * c;
           }
         }
       }
@@ -468,9 +471,9 @@ int main()
   std::cout << "Evaluating the solution for:" << std::endl;
 
   double alpha = 0.3125;
-  int dim = 2;
+  int dim = 25;
   double dt = 0.001;
-  double t_end = .04;
+  double t_end = 1;
 
   Heat1D<double> sol(alpha, dim, dt);
   sol.M.info();
@@ -486,20 +489,19 @@ int main()
   std::cout << "dt = " << dt << "s" << std::endl;
   std::cout << "At t = " << t_end << "s" << std::endl;
 
-  Heat2D<double> sol2(alpha, dim, dt);
-  sol2.M.info();
-  auto U2 = sol2.exact(t_end);
-  auto W2 = sol2.solve(t_end);
-  U2.info();
-  W2.info();
+  // Heat2D<double> sol2(alpha, dim, dt);
+  // sol2.M.info();
+  // auto U2 = sol2.exact(t_end);
+  // auto W2 = sol2.solve(t_end);
+  // U2.info();
+  // W2.info();
 
-	Heat<double> soln(alpha, dim, dt, 3);
-	soln.M.info();
-  auto Un = soln.exact(t_end);
-  auto Wn = soln.solve(t_end);
-  Un.info();
-  Wn.info();
-
+  // Heat<double> soln(alpha, dim, dt, 3);
+  // soln.M.info();
+  // auto Un = soln.exact(t_end);
+  // auto Wn = soln.solve(t_end);
+  // Un.info();
+  // Wn.info();
 
   //std::cout << "Exact solution is" << sol.exact(1) << std::endl;
 
