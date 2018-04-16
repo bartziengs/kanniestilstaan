@@ -141,7 +141,7 @@ T dot(const Vector<T> &l, const Vector<T> &r)
   return res;
 }
 
-// Binary operator: element-wise multiplication of a scalar and a vector s1*v2[i]
+// Left scalar multiplication
 template <typename T1, typename T2>
 auto operator*(const T1 s1, const Vector<T2> &v2)
 {
@@ -152,7 +152,7 @@ auto operator*(const T1 s1, const Vector<T2> &v2)
   return res;
 };
 
-// Binary operator: element-wise multiplication of a vector and a scalar v1[i]*s2
+// Right scalar multiplication
 template <typename T1, typename T2>
 auto operator*(const Vector<T1> &v1, const T2 s2)
 {
