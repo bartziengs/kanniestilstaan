@@ -465,40 +465,6 @@ int main()
   Vector<double> doubleVector = {1.5, 2.5, 3.5, 4.5};
   Vector<double> anotherDouble(doubleVector);
 
-  auto newtype = a - doubleVector;
-  newtype.info();
-  Matrix<double> M(10, 10);
-  M.M[{0, 0}] = 1.0;
-  M.M[{1, 2}] = 2.0;
-  // M.info();
-
-  // std::cout << M.M[{1,2}] << std::endl;
-  // auto mv = M.matvec(v);
-
-  // a.info();
-  // Vector<int> testb = {1, 2, 3, 4};
-  // b.multiply<double>(4.4);
-  // b.info();
-  // Vector<int> c(0);
-  // c = b;
-  // double co = 4.4;
-  // Vector<int> nnnn = 4.4 * b;
-  // c.info();
-  // c = std::move(b); //move assignment
-  // c.info();
-  // auto n = a - doubleVector;
-  // n.info();
-  // auto w = a + b;
-  // w.info();
-  // auto res = a + doubleVector;
-  // res.info();
-  // testb.info();
-  // auto testv = testb;
-
-  // doubleVector.info();
-
-  // int y = a.Vector<int>::dot(a, b);
-  // std::cout << y << std::endl;
   std::cout << "Evaluating the solution for:" << std::endl;
 
   double alpha = 0.3125;
