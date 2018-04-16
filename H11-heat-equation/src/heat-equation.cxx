@@ -91,8 +91,8 @@ public:
     if (size != other.size)
       throw std::invalid_argument("Vectors are of unequal length");
 
-    auto rtype = elements[0] - other.elements[0];
-    Vector<decltype(rtype)> res(size);
+    Vector<typename std::common_type<T, U>::type> res(size);
+
     for (auto i = 0; i < size; i++)
       res.elements[i] = elements[i] - other.elements[i];
 
@@ -106,8 +106,8 @@ public:
     if (size != other.size)
       throw std::invalid_argument("Vectors are of unequal length");
 
-    auto rtype = elements[0] + other.elements[0];
-    Vector<decltype(rtype)> res(size);
+    Vector<typename std::common_type<T, U>::type> res(size);
+
     for (auto i = 0; i < size; i++)
       res.elements[i] = elements[i] + other.elements[i];
 
@@ -145,7 +145,7 @@ public:
 };
 
 //dot product
-template<typename T> 
+template <typename T>
 T dot(const Vector<T> &l, const Vector<T> &r)
 {
   if (l.size != r.size)
@@ -460,6 +460,8 @@ int main()
   Vector<double> doubleVector = {1.5, 2.5, 3.5, 4.5};
   Vector<double> anotherDouble(doubleVector);
 
+  auto newtype = a - doubleVector;
+  newtype.info();
   Matrix<double> M(10, 10);
   M.M[{0, 0}] = 1.0;
   M.M[{1, 2}] = 2.0;
