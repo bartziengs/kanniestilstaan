@@ -114,23 +114,6 @@ public:
     return res;
   }
 
-  //scalar multiplication with other type
-  template <typename S>
-  auto &multiply(S scalar)
-  {
-    for (auto i = 0; i < size; i++)
-      elements[i] *= scalar;
-    return *this;
-  }
-
-  //multiply with same type
-  Vector<T> &multiply(T scalar)
-  {
-    for (auto i = 0; i < size; i++)
-      elements[i] *= scalar;
-    return *this;
-  }
-
   //Print function, for debugging purposes
   void info()
   {
@@ -157,6 +140,28 @@ T dot(const Vector<T> &l, const Vector<T> &r)
   }
   return res;
 }
+
+// Binary operator: element-wise multiplication of a scalar and a vector s1*v2[i]
+template <typename T1, typename T2>
+auto operator*(const T1 s1, const Vector<T2> &v2)
+{
+  Vector<typename std::common_type<T1, T2>::type> res(v2.size);
+  for (int i = 0; i < v2.size; i++)
+    res.elements[i] = s1 * v2.elements[i];
+
+  return res;
+};
+
+// Binary operator: element-wise multiplication of a vector and a scalar v1[i]*s2
+template <typename T1, typename T2>
+auto operator*(const Vector<T1> &v1, const T2 s2)
+{
+  Vector<typename std::common_type<T1, T2>::type> res(v1.size);
+  for (int i = 0; i < v1.size; i++)
+    res.elements[i] = v1.elements[i] * s2;
+
+  return res;
+};
 
 template <typename T>
 class Matrix
@@ -223,15 +228,15 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
   {
     Vector<T> AP = A.matvec(p);
     alpha = dot(r_i, r_i) / dot(AP, p);
-    x = std::move(x + p.multiply(alpha));
-    r_iPlusOne = (r_i - AP.multiply(alpha));
+    x = std::move(x + p * alpha);
+    r_iPlusOne = r_i - AP * alpha;
     if (dot(r_iPlusOne, r_iPlusOne) < tol * tol)
     {
       iter = i;
       break;
     }
     beta = dot(r_iPlusOne, r_iPlusOne) / dot(r_i, r_i);
-    p = std::move(r_iPlusOne + p.multiply(beta));
+    p = std::move(r_iPlusOne + p * beta);
   }
   return iter;
 };
@@ -284,7 +289,7 @@ public:
       w_i.elements[i] = sin(j * M_PI * dx);
     }
     w_i.info();
-    return w_i.multiply(exp(-M_PI * M_PI * alpha * t));
+    return w_i * exp(-M_PI * M_PI * alpha * t);
   }
 
   Vector<double> solve(double t_end) const
@@ -360,7 +365,7 @@ public:
     {
       w_i.elements[i] = sin(i * M_PI * dx);
     }
-    return w_i.multiply(exp(-2 * M_PI * M_PI * alpha * t));
+    return w_i * (-2 * M_PI * M_PI * alpha * t);
   }
 
   Vector<double> solve(double t_end) const
@@ -430,7 +435,7 @@ public:
     {
       w_i.elements[i] = sin(i * M_PI * dx);
     }
-    return w_i.multiply(exp(-n * M_PI * M_PI * alpha * t));
+    return w_i * exp(-n * M_PI * M_PI * alpha * t);
   }
 
   Vector<double> solve(double t_end) const
