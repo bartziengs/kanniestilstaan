@@ -142,10 +142,10 @@ T dot(const Vector<T> &l, const Vector<T> &r)
 }
 
 // Left scalar multiplication
-template <typename T1, typename T2>
-auto operator*(const T1 s1, const Vector<T2> &v2)
+template <typename T, typename U>
+auto operator*(const T s1, const Vector<U> &v2)
 {
-  Vector<typename std::common_type<T1, T2>::type> res(v2.size);
+  Vector<typename std::common_type<T, U>::type> res(v2.size);
   for (int i = 0; i < v2.size; i++)
   {
     res.elements[i] = s1 * v2.elements[i];
@@ -154,10 +154,10 @@ auto operator*(const T1 s1, const Vector<T2> &v2)
 };
 
 // Right scalar multiplication
-template <typename T1, typename T2>
-auto operator*(const Vector<T1> &v1, const T2 s2)
+template <typename T, typename U>
+auto operator*(const Vector<T> &v1, const U s2)
 {
-  Vector<typename std::common_type<T1, T2>::type> res(v1.size);
+  Vector<typename std::common_type<T, U>::type> res(v1.size);
   for (int i = 0; i < v1.size; i++)
   {
     res.elements[i] = v1.elements[i] * s2;
@@ -261,7 +261,6 @@ public:
     M.rows = dim;
     M.columns = dim;
     dx = (double)1 / (1 + dim);
-    std::cout << "dx : " << dx << std::endl;
     c = (alpha * dt) / (dx * dx);
     for (int i = 0; i < dim; i++)
     {
@@ -471,18 +470,22 @@ int main()
   std::cout << "Evaluating the solution for:" << std::endl;
 
   double alpha = 0.3125;
-  int dim = 25;
+  int dim = 99;
   double dt = 0.001;
-  double t_end = 1;
+  double t_end = .012;
 
   Heat1D<double> sol(alpha, dim, dt);
   sol.M.info();
   Vector<double> b = sol.exact(t_end);
   std::cout << "Vector U (exact result)" << std::endl;
   b.info();
+
   auto ruben = sol.solve(t_end);
   std::cout << "Vector W (solved result)" << std::endl;
   ruben.info();
+
+  auto error = b - ruben;
+  error.info();
   std::cout << "Evaluating the solution for:" << std::endl;
   std::cout << "Alpha = " << alpha << std::endl;
   std::cout << "dim = " << dim << std::endl;
