@@ -131,19 +131,6 @@ public:
     return *this;
   }
 
-  //dot product
-  T dot(const Vector<T> &l, const Vector<T> &r)
-  {
-    if (l.size != r.size)
-      throw std::invalid_argument("Vectors are of unequal length");
-    T res = 0;
-    for (int i = 0; i < size; i++)
-    {
-      res += l.elements[i] * r.elements[i];
-    }
-    return res;
-  }
-
   //Print function, for debugging purposes
   void info()
   {
@@ -156,6 +143,20 @@ public:
     std::cout << elements[size - 1] << "]" << std::endl;
   }
 };
+
+//dot product
+template<typename T> 
+T dot(const Vector<T> &l, const Vector<T> &r)
+{
+  if (l.size != r.size)
+    throw std::invalid_argument("Vectors are of unequal length");
+  T res = 0;
+  for (int i = 0; i < l.size; i++)
+  {
+    res += l.elements[i] * r.elements[i];
+  }
+  return res;
+}
 
 template <typename T>
 class Matrix
@@ -220,15 +221,16 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
   auto p = r_i;
   for (int i = 0; i < maxiter - 1; i++)
   {
-    alpha = r_i.dot(r_i, r_i) / p.dot(A.matvec(p), p);
+    Vector<T> AP = A.matvec(p);
+    alpha = dot(r_i, r_i) / dot(AP, p);
     x = std::move(x + p.multiply(alpha));
-    r_iPlusOne = (r_i - A.matvec(p).multiply(alpha));
-    if (r_iPlusOne.dot(r_iPlusOne, r_iPlusOne) < tol * tol)
+    r_iPlusOne = (r_i - AP.multiply(alpha));
+    if (dot(r_iPlusOne, r_iPlusOne) < tol * tol)
     {
       iter = i;
       break;
     }
-    beta = r_iPlusOne.dot(r_iPlusOne, r_iPlusOne) / r_i.dot(r_i, r_i);
+    beta = dot(r_iPlusOne, r_iPlusOne) / dot(r_i, r_i);
     p = std::move(r_iPlusOne + p.multiply(beta));
   }
   return iter;
@@ -289,7 +291,7 @@ public:
   {
     Vector<double> w_i(dim);
     Vector<double> w_iPlusOne(dim);
-      for (int i = 0, j = 1; i < dim; j++, i++)
+    for (int i = 0, j = 1; i < dim; j++, i++)
     {
       w_i.elements[i] = sin(j * M_PI * dx);
     }
