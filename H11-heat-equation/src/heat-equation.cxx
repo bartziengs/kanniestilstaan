@@ -234,8 +234,7 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
     r_iPlusOne = (r_i - AP * alpha);
     if (dot(r_iPlusOne, r_iPlusOne) < tol * tol)
     {
-      iter = i;
-      break;
+      return i;
     }
     beta = dot(r_iPlusOne, r_iPlusOne) / dot(r_i, r_i);
     p = std::move(r_iPlusOne + p * beta);
@@ -305,6 +304,7 @@ public:
     }
 
     int maxIter = (int)ceil(t_end / dt);
+    int res = 1;
     for (int i = 0; i < maxIter; i++)
     {
       int res = cg(M, w_i, w_iPlusOne, 0.01, maxIter);
