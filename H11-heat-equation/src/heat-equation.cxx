@@ -6,6 +6,9 @@
 #include <map>
 #include <math.h>
 #include <array>
+
+double tol = 0.001;
+int maxIter = 1000;
 // PART 1 ###################################################################
 
 template <typename T>
@@ -289,7 +292,6 @@ public:
     {
       w_i.elements[i] = sin(j * M_PI * dx);
     }
-    //w_i.info();
     return w_i * exp(-M_PI * M_PI * alpha * t);
   }
 
@@ -302,14 +304,14 @@ public:
       w_i.elements[i] = sin(j * M_PI * dx);
     }
 
-    int maxIter = (int)ceil(t_end / dt);
+    int tt = (int)ceil(t_end / dt);
     int res = 1;
-    for (int i = 0; i < maxIter; i++)
+    for (int i = 0; i < tt; i++)
     {
-      int res = cg(M, w_i, w_iPlusOne, 0.01, maxIter);
+      int res = cg(M, w_i, w_iPlusOne, tol, maxIter);
       w_i = w_iPlusOne;
     }
-    return w_iPlusOne;
+    return w_i;
   }
 };
 
@@ -347,12 +349,8 @@ public:
         }
         else if (j == i + 1)
         {
-<<<<<<< HEAD
           M.M[{i, j}] = -c;
-=======
-          M.M[{i, j}] = -2 * c;
->>>>>>> ce02db6a9a35b5fef44394452e1c992fdc7870d4
-        }
+				}
         else if (j == i + dim)
         {
           M.M[{i, j}] = -c;
@@ -371,24 +369,24 @@ public:
     {
       w_i.elements[i] = sin(j * M_PI * dx);
     }
-    return w_i * (-2 * M_PI * M_PI * alpha * t);
+    return w_i * exp(-2 * M_PI * M_PI * alpha * t);
   }
 
   Vector<double> solve(double t_end) const
   {
     Vector<double> w_i(dim2);
     Vector<double> w_iPlusOne(dim2);
-    for (int i = 0; i < dim2; i++)
+    for (int i = 0, j = 1; i < dim2; i++, j++)
     {
-      w_i.elements[i] = sin(i * M_PI * dx);
+      w_i.elements[i] = sin(j * M_PI * dx);
     }
-    int maxIter = (int)ceil(t_end / dt);
-    for (int i = 0; i < maxIter; i++)
+    int tt = (int)ceil(t_end / dt);
+    for (int i = 0; i < tt; i++)
     {
-      int res = cg(M, w_i, w_iPlusOne, 0.01, maxIter);
+      int res = cg(M, w_i, w_iPlusOne, tol, maxIter);
       w_i = w_iPlusOne;
     }
-    return w_iPlusOne;
+    return w_i;
   }
 };
 
@@ -424,11 +422,11 @@ public:
           }
           else if (j == i + pow(dim, k))
           {
-            M.M[{i, j}] = -n * c;
+            M.M[{i, j}] = -c;
           }
           else if (j == i - pow(dim, k))
           {
-            M.M[{i, j}] = -n * c;
+            M.M[{i, j}] = -c;
           }
         }
       }
@@ -448,35 +446,31 @@ public:
   {
     Vector<double> w_i(dimn);
     Vector<double> w_iPlusOne(dimn);
-    for (int i = 0; i < dimn; i++)
+    for (int i = 0, j = 1; i < dimn; i++, j++)
     {
-      w_i.elements[i] = sin(i * M_PI * dx);
+      w_i.elements[i] = sin(j * M_PI * dx);
     }
-    int maxIter = (int)ceil(t_end / dt);
-    for (int i = 0; i < maxIter; i++)
+    int tt = (int)ceil(t_end / dt);
+    for (int i = 0; i < tt; i++)
     {
-      int res = cg(M, w_i, w_iPlusOne, 0.05, maxIter);
+      int res = cg(M, w_i, w_iPlusOne, tol, maxIter);
       w_i = w_iPlusOne;
     }
-    return w_iPlusOne;
+    return w_i;
   }
 };
 
 int main()
 {
-  //auto Heat1D<double> solve(0, 222, 3, 0, 2);
 
   Vector<int> a = {2, 4, 6, 122};
   Vector<double> v = {1, 2, 3, 4, 5, 5, 4, 3, 2, 1};
   Vector<double> doubleVector = {1.5, 2.5, 3.5, 4.5};
   Vector<double> anotherDouble(doubleVector);
 
-  std::cout << "Evaluating the solution for:" << std::endl;
-
   double alpha = 0.3125;
-<<<<<<< HEAD
-  int dim = 3;
-  double dt = 0.001;
+  int dim = 2;
+  double dt = 0.0001;
   double t_end = 1;
 
   std::cout << "Evaluating the solutions for:" << std::endl;
@@ -484,73 +478,39 @@ int main()
   std::cout << "dim = " << dim << std::endl;
   std::cout << "dt = " << dt << "s" << std::endl;
   std::cout << "At t = " << t_end << "s" << std::endl;
-=======
-  int dim = 99;
-  double dt = 0.001;
-  double t_end = .012;
->>>>>>> ce02db6a9a35b5fef44394452e1c992fdc7870d4
 
   Heat1D<double> sol(alpha, dim, dt);
-	std::cout << "Matrix M1D: " << std::endl;
-  sol.M.info();
+	//std::cout << "Matrix M1D: " << std::endl;
+  //sol.M.info();
   Vector<double> b = sol.exact(t_end);
-  std::cout << "Vector U1D (exact result)" << std::endl;
-  b.info();
+  //std::cout << "Vector U1D (exact result)" << std::endl;
+  //b.info();
 
   auto ruben = sol.solve(t_end);
-  std::cout << "Vector W1D (solved result)" << std::endl;
+  //std::cout << "Vector W1D (solved result)" << std::endl;
   ruben.info();
-<<<<<<< HEAD
-	std::cout << " " << std::endl;
-
+	//std::cout << " " << std::endl;
 
   Heat2D<double> sol2(alpha, dim, dt);
   auto U2 = sol2.exact(t_end);
   auto W2 = sol2.solve(t_end);
 	std::cout << "Matrix M2D: " << std::endl;
-  sol.M.info();
+  sol2.M.info();
   std::cout << "Vector U2D (exact result)" << std::endl;
   U2.info();
-  std::cout << "Vector W2D (solved result)" << std::endl;
-	W2.info();
-	std::cout << " " << std::endl;
+  //std::cout << "Vector W2D (solved result)" << std::endl;
+	//W2.info();
+	//std::cout << " " << std::endl;
 
-
-
-
-	//Heat<double> soln(alpha, dim, dt, 3);
-	//soln.M.info();
-  //auto Un = soln.exact(t_end);
-  //auto Wn = soln.solve(t_end);
-  //Un.info();
-  //Wn.info();
-
-=======
-
-  auto error = b - ruben;
-  error.info();
-  std::cout << "Evaluating the solution for:" << std::endl;
-  std::cout << "Alpha = " << alpha << std::endl;
-  std::cout << "dim = " << dim << std::endl;
-  std::cout << "dt = " << dt << "s" << std::endl;
-  std::cout << "At t = " << t_end << "s" << std::endl;
-
-  // Heat2D<double> sol2(alpha, dim, dt);
-  // sol2.M.info();
-  // auto U2 = sol2.exact(t_end);
-  // auto W2 = sol2.solve(t_end);
-  // U2.info();
-  // W2.info();
-
-  // Heat<double> soln(alpha, dim, dt, 3);
-  // soln.M.info();
-  // auto Un = soln.exact(t_end);
-  // auto Wn = soln.solve(t_end);
-  // Un.info();
-  // Wn.info();
->>>>>>> ce02db6a9a35b5fef44394452e1c992fdc7870d4
-
-  //std::cout << "Exact solution is" << sol.exact(1) << std::endl;
+	Heat<double> soln(alpha, dim, dt, 2);
+	std::cout << "Matrix MnD: " << std::endl;
+	soln.M.info();
+  auto Un = soln.exact(t_end);
+  auto Wn = soln.solve(t_end);
+  std::cout << "Vector UnD (exact result)" << std::endl;
+  Un.info();
+  std::cout << "Vector WnD (solved result)" << std::endl;
+  Wn.info();
 
   return 0;
 }
