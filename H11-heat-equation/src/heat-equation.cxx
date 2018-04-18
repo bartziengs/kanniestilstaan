@@ -7,8 +7,8 @@
 #include <math.h>
 #include <array>
 
-double tol = 0.001;
-int maxIter = 1000;
+double tol = 0.0001;
+int maxIter = 10000;
 // PART 1 ###################################################################
 
 template <typename T>
@@ -493,7 +493,7 @@ int main()
 
   Heat2D<double> sol2(alpha, dim, dt);
   auto U2 = sol2.exact(t_end);
-  auto W2 = sol2.solve(t_end);
+  //auto W2 = sol2.solve(t_end);
 	std::cout << "Matrix M2D: " << std::endl;
   sol2.M.info();
   std::cout << "Vector U2D (exact result)" << std::endl;
@@ -502,7 +502,7 @@ int main()
 	//W2.info();
 	//std::cout << " " << std::endl;
 
-	Heat<double> soln(alpha, dim, dt, 2);
+	Heat<double> soln(alpha, dim, dt, 3);
 	std::cout << "Matrix MnD: " << std::endl;
 	soln.M.info();
   auto Un = soln.exact(t_end);
