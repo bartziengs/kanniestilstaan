@@ -141,25 +141,27 @@ T dot(const Vector<T> &l, const Vector<T> &r)
   return res;
 }
 
-// Binary operator: element-wise multiplication of a scalar and a vector s1*v2[i]
-template <typename T1, typename T2>
-auto operator*(const T1 s1, const Vector<T2> &v2)
+// Left scalar multiplication
+template <typename T, typename U>
+auto operator*(const T s1, const Vector<U> &v2)
 {
-  Vector<typename std::common_type<T1, T2>::type> res(v2.size);
+  Vector<typename std::common_type<T, U>::type> res(v2.size);
   for (int i = 0; i < v2.size; i++)
+  {
     res.elements[i] = s1 * v2.elements[i];
-
+  }
   return res;
 };
 
-// Binary operator: element-wise multiplication of a vector and a scalar v1[i]*s2
-template <typename T1, typename T2>
-auto operator*(const Vector<T1> &v1, const T2 s2)
+// Right scalar multiplication
+template <typename T, typename U>
+auto operator*(const Vector<T> &v1, const U s2)
 {
-  Vector<typename std::common_type<T1, T2>::type> res(v1.size);
+  Vector<typename std::common_type<T, U>::type> res(v1.size);
   for (int i = 0; i < v1.size; i++)
+  {
     res.elements[i] = v1.elements[i] * s2;
-
+  }
   return res;
 };
 
@@ -229,11 +231,10 @@ int cg(const Matrix<T> &A, const Vector<T> &b, Vector<T> &x, T tol, int maxiter)
     Vector<T> AP = A.matvec(p);
     alpha = dot(r_i, r_i) / dot(AP, p);
     x = std::move(x + p * alpha);
-    r_iPlusOne = r_i - AP * alpha;
+    r_iPlusOne = (r_i - AP * alpha);
     if (dot(r_iPlusOne, r_iPlusOne) < tol * tol)
     {
-      iter = i;
-      break;
+      return i;
     }
     beta = dot(r_iPlusOne, r_iPlusOne) / dot(r_i, r_i);
     p = std::move(r_iPlusOne + p * beta);
@@ -260,7 +261,6 @@ public:
     M.rows = dim;
     M.columns = dim;
     dx = (double)1 / (1 + dim);
-    std::cout << "dx : " << dx << std::endl;
     c = (alpha * dt) / (dx * dx);
     for (int i = 0; i < dim; i++)
     {
@@ -281,6 +281,7 @@ public:
       }
     }
   }
+
   Vector<double> exact(double t) const
   {
     Vector<double> w_i(dim);
@@ -302,6 +303,7 @@ public:
     }
 
     int maxIter = (int)ceil(t_end / dt);
+    int res = 1;
     for (int i = 0; i < maxIter; i++)
     {
       int res = cg(M, w_i, w_iPlusOne, 0.01, maxIter);
@@ -345,7 +347,11 @@ public:
         }
         else if (j == i + 1)
         {
+<<<<<<< HEAD
           M.M[{i, j}] = -c;
+=======
+          M.M[{i, j}] = -2 * c;
+>>>>>>> ce02db6a9a35b5fef44394452e1c992fdc7870d4
         }
         else if (j == i + dim)
         {
@@ -418,11 +424,11 @@ public:
           }
           else if (j == i + pow(dim, k))
           {
-            M.M[{i, j}] = - n * c;
+            M.M[{i, j}] = -n * c;
           }
           else if (j == i - pow(dim, k))
           {
-            M.M[{i, j}] = - n * c;
+            M.M[{i, j}] = -n * c;
           }
         }
       }
@@ -468,6 +474,7 @@ int main()
   std::cout << "Evaluating the solution for:" << std::endl;
 
   double alpha = 0.3125;
+<<<<<<< HEAD
   int dim = 3;
   double dt = 0.001;
   double t_end = 1;
@@ -477,6 +484,11 @@ int main()
   std::cout << "dim = " << dim << std::endl;
   std::cout << "dt = " << dt << "s" << std::endl;
   std::cout << "At t = " << t_end << "s" << std::endl;
+=======
+  int dim = 99;
+  double dt = 0.001;
+  double t_end = .012;
+>>>>>>> ce02db6a9a35b5fef44394452e1c992fdc7870d4
 
   Heat1D<double> sol(alpha, dim, dt);
 	std::cout << "Matrix M1D: " << std::endl;
@@ -484,9 +496,11 @@ int main()
   Vector<double> b = sol.exact(t_end);
   std::cout << "Vector U1D (exact result)" << std::endl;
   b.info();
+
   auto ruben = sol.solve(t_end);
   std::cout << "Vector W1D (solved result)" << std::endl;
   ruben.info();
+<<<<<<< HEAD
 	std::cout << " " << std::endl;
 
 
@@ -511,6 +525,30 @@ int main()
   //Un.info();
   //Wn.info();
 
+=======
+
+  auto error = b - ruben;
+  error.info();
+  std::cout << "Evaluating the solution for:" << std::endl;
+  std::cout << "Alpha = " << alpha << std::endl;
+  std::cout << "dim = " << dim << std::endl;
+  std::cout << "dt = " << dt << "s" << std::endl;
+  std::cout << "At t = " << t_end << "s" << std::endl;
+
+  // Heat2D<double> sol2(alpha, dim, dt);
+  // sol2.M.info();
+  // auto U2 = sol2.exact(t_end);
+  // auto W2 = sol2.solve(t_end);
+  // U2.info();
+  // W2.info();
+
+  // Heat<double> soln(alpha, dim, dt, 3);
+  // soln.M.info();
+  // auto Un = soln.exact(t_end);
+  // auto Wn = soln.solve(t_end);
+  // Un.info();
+  // Wn.info();
+>>>>>>> ce02db6a9a35b5fef44394452e1c992fdc7870d4
 
   //std::cout << "Exact solution is" << sol.exact(1) << std::endl;
 
