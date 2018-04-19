@@ -9,6 +9,7 @@
 
 double tol = 0.0001;
 int maxIter = 10000;
+
 // PART 1 ###################################################################
 
 template <typename T>
@@ -442,6 +443,14 @@ public:
     {
       for (int j = 0; j < dimn; j++)
       {
+				M.M[{i,j}] = 0;
+			}
+		}
+
+    for (int i = 0; i < dimn; i++)
+    {
+      for (int j = 0; j < dimn; j++)
+      {
         for (int k = 0; k < n; k++)
         {
           if (i == j)
@@ -456,22 +465,11 @@ public:
           {
             M.M[{i, j}] = -c;
           }
-          else if (j == i + 1)
-          {
-            M.M[{i, j}] = -c;
-          }
-          else if (j == i - 1)
-          {
-            M.M[{i, j}] = -c;
-          }
-          else
-          {
-            M.M[{i, j}] = 0;
-          }
         }
       }
     }
   }
+
   Vector<double> exact(double t) const
   {
     Vector<double> w_i(dimn);
@@ -484,11 +482,53 @@ public:
 
   Vector<double> solve(double t_end) const
   {
-    Vector<double> w_i(dimn);
-    Vector<double> w_iPlusOne(dimn);
-    for (int i = 0, j = 1; i < dimn; i++, j++)
+		Vector<double> w_iPlusOne(pow(dim,n));
+    Vector<double> w_i(pow(dim,n));
+		if (n == 1)
+  	{
+    for (int i = 0, j = 1; i < dim; j++, i++)
     {
       w_i.elements[i] = sin(j * M_PI * dx);
+    }
+
+    int tt = (int)ceil(t_end / dt);
+    for (int i = 0; i < tt; i++)
+    {
+      cg(M, w_i, w_iPlusOne, tol, maxIter);
+      w_i = w_iPlusOne;
+    }
+    return w_i;
+  	}
+		else if (n == 2)
+		{
+    for (int j = 1; j < dim + 1; j++)
+    {
+			for (int i = 1; i < dim + 1; i++)
+			{
+      		w_i.elements[i + (j - 1) * dim - 1] = sin(j * M_PI * dx)*sin(i * M_PI * dx);
+			}
+    }
+    int tt = (int)ceil(t_end / dt);
+    	for (int i = 0; i < tt; i++)
+    	{
+      int res = cg(M, w_i, w_iPlusOne, tol, maxIter);
+      w_i = w_iPlusOne;
+    }
+    return w_i;
+		}
+	else if (n ==3)
+	{
+		Vector<double> w_iPlusOne(pow(dim,n));
+    Vector<double> (pow(dim,n));
+		for (int k = 1; k < dim + 1; k++)
+		{
+    	for (int j = 1; j < dim + 1; j++)
+    	{
+				for (int i = 1; i < dim + 1; i++)
+				{
+      		w_i.elements[i + (j - 1) * dim + (k - 1) * dim * dim - 1] = sin(j * M_PI * dx)*sin(i * M_PI * dx)*sin(k * M_PI *dx);
+				}
+			}
     }
     int tt = (int)ceil(t_end / dt);
     for (int i = 0; i < tt; i++)
@@ -497,15 +537,16 @@ public:
       w_i = w_iPlusOne;
     }
     return w_i;
+	}
   }
 };
 
 int main()
 {
   double alpha = 0.3125;
-  int dim = 3;
+  int dim = 99;
   double dt = 0.001;
-  double t_end = 1;
+  double t_end = 0.5;
 
   std::cout << "Evaluating the solution for:" << std::endl;
   std::cout << "Alpha = " << alpha << std::endl;
@@ -513,43 +554,43 @@ int main()
   std::cout << "dt = " << dt << "s" << std::endl;
   std::cout << "At t = " << t_end << "s" << std::endl;
 
-  Heat1D<double> sol(alpha, dim, dt);
-  sol.M.info();
-  Vector<double> U1 = sol.exact(t_end);
-  std::cout << "Vector U1D (exact result)" << std::endl;
-  U1.info();
-  auto W1 = sol.solve(t_end);
-  std::cout << "Vector W1D (solved result)" << std::endl;
-  W1.info();
-	std::cout << " " << std::endl;
+  //Heat1D<double> sol(alpha, dim, dt);
+  //sol.M.info();
+  //Vector<double> U1 = sol.exact(t_end);
+  //std::cout << "Vector U1D (exact result)" << std::endl;
+  //U1.info();
+  //auto W1 = sol.solve(t_end);
+  //std::cout << "Vector W1D (solved result)" << std::endl;
+  //W1.info();
+	//std::cout << " " << std::endl;
 
-	std::cout << "difference U1D - W1D = " << std::endl;
-	Vector<double> R1 = U1 - W1;
-	R1.info();
+	//std::cout << "difference U1D - W1D = " << std::endl;
+	//Vector<double> R1 = U1 - W1;
+	//R1.info();
 
-  Heat2D<double> sol2(alpha, dim, dt);
-  auto U2 = sol2.exact(t_end);
-  auto W2 = sol2.solve(t_end);
-	std::cout << "Matrix M2D: " << std::endl;
-  sol2.M.info();
-  std::cout << "Vector U2D (exact result)" << std::endl;
-  U2.info();
-  std::cout << "Vector W2D (solved result)" << std::endl;
-	W2.info();
-	std::cout << "difference U2D - W2D = " << std::endl;
-	Vector<double> R2 = U2 - W2;
-	R2.info();
-	std::cout << " " << std::endl;
+  //Heat2D<double> sol2(alpha, dim, dt);
+  //auto U2 = sol2.exact(t_end);
+  //auto W2 = sol2.solve(t_end);
+	//std::cout << "Matrix M2D: " << std::endl;
+  //sol2.M.info();
+  //std::cout << "Vector U2D (exact result)" << std::endl;
+  //U2.info();
+  //std::cout << "Vector W2D (solved result)" << std::endl;
+	//W2.info();
+	//std::cout << "difference U2D - W2D = " << std::endl;
+	//Vector<double> R2 = U2 - W2;
+	//R2.info();
+	//std::cout << " " << std::endl;
 
-	//Heat<double> soln(alpha, dim, dt, 2);
-	//std::cout << "Matrix MnD: " << std::endl;
-	//soln.M.info();
-  //auto Un = soln.exact(t_end);
-  //auto Wn = soln.solve(t_end);
-  //std::cout << "Vector UnD (exact result)" << std::endl;
-  //Un.info();
-  //std::cout << "Vector WnD (solved result)" << std::endl;
-  //Wn.info();
+	Heat<double> soln(alpha, dim, dt, 2);
+	std::cout << "Matrix MnD: " << std::endl;
+	soln.M.info();
+  auto Un = soln.exact(t_end);
+  auto Wn = soln.solve(t_end);
+  std::cout << "Vector UnD (exact result)" << std::endl;
+  Un.info();
+  std::cout << "Vector WnD (solved result)" << std::endl;
+  Wn.info();
 
   return 0;
 }
